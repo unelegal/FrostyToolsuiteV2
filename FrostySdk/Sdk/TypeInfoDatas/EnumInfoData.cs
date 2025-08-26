@@ -18,7 +18,7 @@ internal class EnumInfoData : TypeInfoData
             m_name = $"Enum_{m_nameHash:x8}";
         }
 
-        if (TypeInfo.Version > 6)
+        if (TypeInfo.Version == 7)
         {
             // name again
             reader.ReadLong();

@@ -48,9 +48,16 @@ internal class TypeInfo
                 return 6;
             }
 
-            // Field offset as uint
-            // (2022.2.1? maybe v6), 2023.1.1, 2023.1.2
-            return 7;
+            if (ProfilesLibrary.FrostbiteVersion <= "2024.1.2")
+            {
+                // Field offset as uint
+                // (2022.2.1? maybe v6), 2023.1.1, 2023.1.2
+                return 7;
+            }
+
+            // TypeInfo m_id as uint, m_nextId added, m_flags and m_id switched places
+            // 2024.1.3
+            return 8;
         }
     }
 
@@ -60,8 +67,9 @@ internal class TypeInfo
     protected TypeInfoData m_data;
     protected long p_prev;
     protected long p_next;
-    protected ushort m_id;
+    protected uint m_id;
     protected ushort m_flags;
+    protected ushort m_nextId;
 
     public TypeInfo(TypeInfoData data)
     {
@@ -131,6 +139,13 @@ internal class TypeInfo
 
     public virtual void Read(MemoryReader reader)
     {
+        if (Version > 7)
+        {
+            m_nextId = reader.ReadUShort();
+            m_flags = reader.ReadUShort();
+            m_id = reader.ReadUInt();
+        }
+
         if (Version > 5)
         {
             p_prev = reader.ReadLong();
@@ -146,6 +161,11 @@ internal class TypeInfo
         {
             // signature
             reader.ReadGuid();
+        }
+
+        if (Version > 7)
+        {
+            return;
         }
 
         m_id = reader.ReadUShort();
