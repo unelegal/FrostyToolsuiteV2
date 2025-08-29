@@ -6,36 +6,47 @@
         <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-        <PublishSingleFile>true</PublishSingleFile>
     </PropertyGroup>
 
     <ItemGroup>
         <AvaloniaResource Include="Assets\**"/>
     </ItemGroup>
 
-
     <ItemGroup>
-        <PackageReference Include="Avalonia" Version="11.0.10" />
-        <PackageReference Include="Avalonia.Controls.TreeDataGrid" Version="11.0.2" />
-        <PackageReference Include="Avalonia.Desktop" Version="11.0.10" />
-        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
-        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
+        <PackageReference Include="Avalonia" Version="11.3.4"/>
+        <PackageReference Include="Avalonia.Desktop" Version="11.3.4"/>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.4"/>
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.4"/>
         <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
-        <PackageReference Condition="'$(Configuration)' == 'Debug'" Include="Avalonia.Diagnostics" Version="11.0.10" />
-        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
-        <PackageReference Include="MessageBox.Avalonia" Version="3.1.5.1" />
-        <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.7.0" />
-        <PackageReference Include="Pastel" Version="5.0.0" />
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.3.4">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
+        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     </ItemGroup>
 
-
     <ItemGroup>
-      <ProjectReference Include="..\FrostySdk\FrostySdk.csproj" />
+      <Compile Update="Views\Windows\ProjectWindow.axaml.cs">
+        <DependentUpon>ProjectWindow.axaml</DependentUpon>
+        <SubType>Code</SubType>
+      </Compile>
+      <Compile Update="Assets\Lang\Resources.Designer.cs">
+        <DesignTime>True</DesignTime>
+        <AutoGen>True</AutoGen>
+        <DependentUpon>Resources.resx</DependentUpon>
+      </Compile>
     </ItemGroup>
 
-
     <ItemGroup>
-      <None Update="Sdk\*.dll" CopyToOutputDirectory="PreserveNewest" />
-      <None Update="Profiles\*.json" CopyToOutputDirectory="PreserveNewest" />
+      <EmbeddedResource Update="Assets\Lang\Resources.resx">
+        <Generator>PublicResXFileCodeGenerator</Generator>
+        <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
+      <EmbeddedResource Update="Assets\Lang\Resources.resx">
+        <Generator>ResXFileCodeGenerator</Generator>
+        <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      </EmbeddedResource>
     </ItemGroup>
 </Project>

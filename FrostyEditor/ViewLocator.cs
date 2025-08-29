@@ -2,29 +2,37 @@ using System;
 using Avalonia.Controls;
 using Avalonia.Controls.Templates;
 using FrostyEditor.ViewModels;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace FrostyEditor;
 
 public class ViewLocator : IDataTemplate
 {
-    public Control? Build(object? data)
+    private readonly IServiceProvider m_serviceProvider;
+
+    public ViewLocator(IServiceProvider serviceProvider)
     {
-        if (data is null)
+        m_serviceProvider = serviceProvider;
+    }
+
+    public Control? Build(object? param)
+    {
+        if (param is null)
         {
             return null;
         }
 
-        string name = data.GetType().FullName!.Replace("ViewModel", "View", StringComparison.Ordinal);
+        string name = param.GetType().FullName!.Replace("ViewModel", "View", StringComparison.Ordinal);
         Type? type = Type.GetType(name);
 
-        if (type is not null)
+        if (type == null)
         {
-            Control control = (Control)Activator.CreateInstance(type)!;
-            control.DataContext = data;
-            return control;
+            return new TextBlock { Text = "Not Found: " + name };
         }
 
-        return new TextBlock { Text = "Not Found: " + name };
+        IServiceScope scope = m_serviceProvider.CreateScope();
+        return (Control) scope.ServiceProvider.GetRequiredService(type);
+
     }
 
     public bool Match(object? data)

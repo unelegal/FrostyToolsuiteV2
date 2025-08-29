@@ -1,0 +1,52 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vControls="using:FrostyEditor.Views.Controls"
+        xmlns:vmControls="using:FrostyEditor.ViewModels.Controls"
+        xmlns:vmWindows="using:FrostyEditor.ViewModels.Windows"
+        xmlns:lang="using:FrostyEditor.Assets.Lang"
+        xmlns:markup="using:FrostyEditor.Utilities.MarkupExtensions"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="FrostyEditor.Views.Windows.ProjectWindow"
+        x:DataType="vmWindows:ProjectWindowViewModel"
+        Design.DataContext="{markup:DesignLocator {x:Type vmWindows:ProjectWindowViewModel}}"
+        Title="Open project"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        ExtendClientAreaToDecorationsHint="True"
+        Width="800" Height="450"
+        CanResize="False">
+  
+  <Panel>
+    <ExperimentalAcrylicBorder IsHitTestVisible="False">
+      <ExperimentalAcrylicBorder.Material>
+        <ExperimentalAcrylicMaterial
+          BackgroundSource="Digger"
+          TintColor="{DynamicResource SystemChromeLowColor}"
+          TintOpacity="1"
+          MaterialOpacity="0.65" />
+      </ExperimentalAcrylicBorder.Material>
+    </ExperimentalAcrylicBorder>
+    
+    <Grid RowDefinitions="Auto, *" Margin="10" RowSpacing="5">
+      <TextBlock Grid.Row="0" Text="Frosty" Margin="20 15" FontSize="18"/>
+      
+      <Grid Grid.Row="1" ColumnDefinitions="Auto, *" ColumnSpacing="5">
+        <Grid Grid.Column="0" RowDefinitions="*, Auto" Margin="5">
+          <StackPanel Grid.Row="0" Orientation="Vertical" Spacing="10">
+            <Button HorizontalAlignment="Stretch" Content="{x:Static lang:Resources.CreateProject}" Margin="5"/>
+            <Button HorizontalAlignment="Stretch" Content="{x:Static lang:Resources.OpenProject}" Margin="5"/>
+          </StackPanel>
+          
+          <Button Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5">
+            <PathIcon Data="{StaticResource IconSettingsRegular}" />
+          </Button>
+        </Grid>
+        
+        <vControls:RecentProjectsPane Grid.Column="1" DataContext="{Binding RecentProjects}"/>
+      </Grid>
+    </Grid>
+  </Panel>
+  
+</Window>

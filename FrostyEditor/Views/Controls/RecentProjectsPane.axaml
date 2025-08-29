@@ -1,0 +1,25 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vControls="using:FrostyEditor.Views.Controls"
+             xmlns:vmControls="using:FrostyEditor.ViewModels.Controls"
+             xmlns:lang="using:FrostyEditor.Assets.Lang"
+             xmlns:markup="using:FrostyEditor.Utilities.MarkupExtensions"
+             Design.DataContext="{markup:DesignLocator {x:Type vmControls:RecentProjectsPaneViewModel}}"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="FrostyEditor.Views.Controls.RecentProjectsPane"
+             x:DataType="vmControls:RecentProjectsPaneViewModel">
+  
+  <ItemsControl ItemsSource="{Binding RecentProjects}">
+    <ItemsControl.ItemTemplate>
+      <DataTemplate>
+        <StackPanel Orientation="Vertical">
+          <TextBlock Text="{Binding Name}" />
+          <TextBlock Text="{Binding FullPath}" />
+        </StackPanel>
+      </DataTemplate>
+    </ItemsControl.ItemTemplate>
+  </ItemsControl>
+  
+</UserControl>
