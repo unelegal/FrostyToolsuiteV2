@@ -24,4 +24,13 @@
   <data name="CreateProject" xml:space="preserve">
     <value>Create Project</value>
   </data>
+  <data name="CreateProjectLong" xml:space="preserve">
+    <value>Create a new Project</value>
+  </data>
+  <data name="OpenProfileManager" xml:space="preserve">
+    <value>Open Profile Manager</value>
+  </data>
+  <data name="FrostyProject" xml:space="preserve">
+    <value>Frosty Project</value>
+  </data>
 </root>

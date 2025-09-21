@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using Avalonia;
+﻿using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
@@ -8,9 +7,9 @@ using ReactiveUI;
 
 namespace FrostyEditor.Views.Controls;
 
-public partial class RecentProjectsPane : ReactiveUserControl<RecentProjectsPaneViewModel>
+public partial class ProfilePicker : ReactiveUserControl<ProfilePickerViewModel>
 {
-    public RecentProjectsPane()
+    public ProfilePicker()
     {
         this.WhenActivated(_ => { });
         InitializeComponent();

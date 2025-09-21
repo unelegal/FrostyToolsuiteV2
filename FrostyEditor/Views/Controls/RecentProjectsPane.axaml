@@ -11,15 +11,17 @@
              x:Class="FrostyEditor.Views.Controls.RecentProjectsPane"
              x:DataType="vmControls:RecentProjectsPaneViewModel">
   
-  <ItemsControl ItemsSource="{Binding RecentProjects}">
-    <ItemsControl.ItemTemplate>
-      <DataTemplate>
-        <StackPanel Orientation="Vertical">
-          <TextBlock Text="{Binding Name}" />
-          <TextBlock Text="{Binding FullPath}" />
-        </StackPanel>
-      </DataTemplate>
-    </ItemsControl.ItemTemplate>
-  </ItemsControl>
+  <ScrollViewer>
+    <ItemsControl ItemsSource="{Binding RecentProjects}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <StackPanel Orientation="Vertical" Margin="10">
+            <TextBlock Text="{Binding Name}" FontSize="16" Margin="10 5"/>
+            <TextBlock Text="{Binding FullPath}" FontSize="13" FontWeight="Thin" Margin="10 5"/>
+          </StackPanel>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </ScrollViewer>
   
 </UserControl>

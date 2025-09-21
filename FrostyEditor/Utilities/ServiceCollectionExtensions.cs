@@ -15,6 +15,8 @@ public static class ServiceCollectionExtensions
     {
         return serviceCollection
             .AddTransient<ProjectWindowViewModel>()
-            .AddTransient<RecentProjectsPaneViewModel>();
+            .AddTransient<RecentProjectsPaneViewModel>()
+            .AddTransient<NewProjectWindowViewModel>()
+            .AddTransient<ProfilePickerViewModel>();
     }
 }

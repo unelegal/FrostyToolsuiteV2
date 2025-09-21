@@ -38,7 +38,7 @@ namespace FrostyEditor.Assets.Lang {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FrostyEditor.Assets.Lang.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("FrostyEditor.Lang.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -65,6 +65,33 @@ namespace FrostyEditor.Assets.Lang {
         public static string CreateProject {
             get {
                 return ResourceManager.GetString("CreateProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Create a new Project.
+        /// </summary>
+        public static string CreateProjectLong {
+            get {
+                return ResourceManager.GetString("CreateProjectLong", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Frosty Project.
+        /// </summary>
+        public static string FrostyProject {
+            get {
+                return ResourceManager.GetString("FrostyProject", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Open Profile Manager.
+        /// </summary>
+        public static string OpenProfileManager {
+            get {
+                return ResourceManager.GetString("OpenProfileManager", resourceCulture);
             }
         }
         

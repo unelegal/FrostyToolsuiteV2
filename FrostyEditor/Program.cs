@@ -2,6 +2,7 @@
 using System;
 using Avalonia.Controls;
 using Avalonia.Logging;
+using Avalonia.ReactiveUI;
 using FrostyEditor.Services;
 using FrostyEditor.Services.Implementation;
 using FrostyEditor.Services.Implementation.Mock;
@@ -26,7 +27,8 @@ sealed class Program
         => AppBuilder.Configure(() => new App(serviceProvider))
             .UsePlatformDetect()
             .WithInterFont()
-            .LogToTrace();
+            .LogToTrace()
+            .UseReactiveUI();
 
     private static ServiceCollection BuildBaseServiceCollection()
     {
@@ -41,7 +43,9 @@ sealed class Program
     private static ServiceProvider BuildDesignServiceProvider()
     {
         ServiceCollection builder = BuildBaseServiceCollection();
-        builder.AddSingleton<IRecentProjectsService, DesignRecentProjectsService>();
+        builder
+            .AddSingleton<IRecentProjectsService, DesignRecentProjectsService>()
+            .AddSingleton<IProfileService, DesignProfileService>();
 
         return builder.BuildServiceProvider();
     }
@@ -49,7 +53,9 @@ sealed class Program
     private static ServiceProvider BuildRuntimeServiceProvider()
     {
         ServiceCollection builder = BuildBaseServiceCollection();
-        builder.AddSingleton<IRecentProjectsService, RecentProjectsService>();
+        builder
+            .AddSingleton<IRecentProjectsService, RecentProjectsService>()
+            .AddSingleton<IProfileService, ProfileService>();
 
         return builder.BuildServiceProvider();
     }
