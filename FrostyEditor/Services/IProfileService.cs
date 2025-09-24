@@ -7,8 +7,53 @@ namespace FrostyEditor.Services;
 public interface IProfileService
 {
     /// <summary>
-    /// Get all profile instances. Loads from disk on first call
+    /// Get all profile instances. Might read from disk, make sure to only
+    /// call this from the thread pool!
     /// </summary>
     /// <returns></returns>
-    public Task<IEnumerable<ProfileInstance>> GetProfilesAsync();
+    public IEnumerable<ProfileInstance> GetProfileInstances();
+
+    /// <summary>
+    /// Add a new profile instance. Writes to disk, make sure to only
+    /// call this from the thread pool!
+    /// </summary>
+    /// <param name="profile">The profile instance to add</param>
+    /// <returns>True on success, false if a profile with the same slug already exists</returns>
+    public bool AddProfileInstance(ProfileInstance profile);
+
+    /// <summary>
+    /// Delete a profile instance. Writes to disk, make sure to only
+    /// call this from the thread pool!
+    /// </summary>
+    /// <param name="slug">Slug of the instance to remove</param>
+    /// <returns>True on success, false if the slug could not be found</returns>
+    public bool RemoveProfileInstance(string slug);
+
+    /// <summary>
+    /// Check if a given profile key is valid
+    /// </summary>
+    /// <param name="profileKey">The profile key to check</param>
+    /// <returns>True if valid</returns>
+    public bool IsValidProfileKey(string profileKey);
+
+    /// <summary>
+    /// Check if the given profile requires a CAS key
+    /// </summary>
+    /// <param name="profileKey">The profile key to check</param>
+    /// <returns>True if a CAS key is required</returns>
+    public bool RequiresCasKey(string profileKey);
+
+    /// <summary>
+    /// Check if the given profile requires a Bundle key
+    /// </summary>
+    /// <param name="profileKey">The profile key to check</param>
+    /// <returns>True if a Bundle key is required</returns>
+    public bool RequiresBundleKey(string profileKey);
+
+    /// <summary>
+    /// Check if the given profile requires an InitFS key
+    /// </summary>
+    /// <param name="profileKey">The profile key to check</param>
+    /// <returns>True if a InitFS key is required</returns>
+    public bool RequiresInitFsKey(string profileKey);
 }

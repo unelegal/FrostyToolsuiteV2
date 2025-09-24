@@ -1,4 +1,5 @@
 ﻿using System;
+using Autofac;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -15,6 +16,6 @@ public class DesignLocator(Type type) : MarkupExtension
             throw new InvalidOperationException("Design locator is only available in Design Mode.");
         }
 
-        return Application.Current!.GetServiceProvider().GetRequiredService(type);
+        return App.Locator.Resolve(type);
     }
 }

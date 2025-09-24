@@ -41,9 +41,17 @@
                     Command="{Binding OpenProjectCommand}" />
           </StackPanel>
 
-          <Button Grid.Row="1" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="5">
-            <PathIcon Data="{StaticResource IconSettingsRegular}" />
-          </Button>
+          <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="5">
+            <Button>
+              <PathIcon Data="{StaticResource IconSettingsRegular}" />
+            </Button>
+            <Button Command="{Binding OpenProfileManagerCommand}">
+              <PathIcon Data="{StaticResource IconGameController}" />
+            </Button>
+            <Button Command="{Binding OpenKeyManagerCommand}">
+              <PathIcon Data="{StaticResource IconKey}" />
+            </Button>
+          </StackPanel>
         </Grid>
 
         <vControls:RecentProjectsPane Grid.Column="1" DataContext="{Binding RecentProjects}" />

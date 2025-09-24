@@ -1,0 +1,57 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vControls="using:FrostyEditor.Views.Controls"
+        xmlns:vmControls="using:FrostyEditor.ViewModels.Controls"
+        xmlns:vmWindows="using:FrostyEditor.ViewModels.Windows"
+        xmlns:lang="using:FrostyEditor.Assets.Lang"
+        xmlns:markup="using:FrostyEditor.Utilities.MarkupExtensions"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="FrostyEditor.Views.Windows.ProfileManagerWindow"
+        x:DataType="vmWindows:ProfileManagerViewModel"
+        Design.DataContext="{markup:DesignLocator {x:Type vmWindows:ProfileManagerViewModel}}"
+        Title="Profile Manager"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        ExtendClientAreaToDecorationsHint="True"
+        Width="800" Height="450"
+        CanResize="False">
+
+  <Panel>
+    <ExperimentalAcrylicBorder IsHitTestVisible="False">
+      <ExperimentalAcrylicBorder.Material>
+        <ExperimentalAcrylicMaterial
+          BackgroundSource="Digger"
+          TintColor="{DynamicResource SystemChromeLowColor}"
+          TintOpacity="1"
+          MaterialOpacity="0.65" />
+      </ExperimentalAcrylicBorder.Material>
+    </ExperimentalAcrylicBorder>
+
+    <Grid RowDefinitions="Auto, Auto, Auto, *">
+      <TextBlock Grid.Row="0" Text="Profile Manager" Margin="20 15" FontSize="18" />
+      <Separator Grid.Row="1" Margin="5 0" />
+      <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="5" Margin="25 10">
+        <Button Content="Add" Command="{Binding  AddProfileCommand}"></Button>
+        <Button Content="Remove" Command="{Binding RemoveProfileCommand}"
+                CommandParameter="{Binding SelectedProfile}">
+        </Button>
+        <Button Content="Scan"></Button>
+      </StackPanel>
+      <ListBox Grid.Row="3" Margin="25 5" ItemsSource="{Binding Profiles}" SelectedItem="{Binding SelectedProfile}"
+               CornerRadius="5"
+               SelectionMode="Single, Toggle">
+        <ListBox.ItemTemplate>
+          <DataTemplate>
+            <StackPanel Orientation="Horizontal">
+              <PathIcon Data="{StaticResource IconGameController}" Margin="10 0" />
+              <TextBlock Text="{Binding Name}" />
+            </StackPanel>
+          </DataTemplate>
+        </ListBox.ItemTemplate>
+      </ListBox>
+    </Grid>
+  </Panel>
+
+</Window>

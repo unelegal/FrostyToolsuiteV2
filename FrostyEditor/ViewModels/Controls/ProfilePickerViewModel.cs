@@ -1,51 +1,52 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
+using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using FrostyEditor.Models;
 using FrostyEditor.Services;
+using FrostyEditor.ViewModels.Data;
 using ReactiveUI;
+using ReactiveUI.SourceGenerators;
+using Tmds.DBus.Protocol;
+
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
 
 namespace FrostyEditor.ViewModels.Controls;
 
-public class ProfilePickerViewModel : ViewModelBase, IActivatableViewModel
+public partial class ProfilePickerViewModel : ViewModelBase, IActivatableViewModel
 {
     private readonly IProfileService m_profileService;
 
-    public ViewModelActivator Activator { get; }
+    public ViewModelActivator Activator { get; } = new();
 
-    private readonly ObservableAsPropertyHelper<IEnumerable<ProfileInstance>> m_profiles;
-    public IEnumerable<ProfileInstance> Profiles => m_profiles.Value;
-    public ReactiveCommand<Unit, IEnumerable<ProfileInstance>> LoadProfiles { get; }
-    public ReactiveCommand<Unit, Unit> OpenProfileManager { get; }
-    public Interaction<Unit, Unit> OpenProfileManagerInteraction { get; }
+    public Interaction<Unit, Unit> OpenProfileManagerInteraction { get; } = new();
 
-    private ProfileInstance? m_selectedProfile;
-    public ProfileInstance? SelectedProfile
-    {
-        get => m_selectedProfile;
-        set => this.RaiseAndSetIfChanged(ref m_selectedProfile, value);
-    }
+    [ObservableAsProperty]
+    private IEnumerable<ProfileInstanceViewModel> m_profiles = [];
+
+    [Reactive]
+    private ProfileInstanceViewModel? m_selectedProfile;
 
     public ProfilePickerViewModel(IProfileService profileService)
     {
         m_profileService = profileService;
-        Activator = new ViewModelActivator();
 
-        LoadProfiles = ReactiveCommand.CreateFromTask(m_profileService.GetProfilesAsync);
-        m_profiles = LoadProfiles.ToProperty(this, nameof(Profiles), scheduler: RxApp.MainThreadScheduler);
+        m_profilesHelper = LoadProfilesCommand.ToProperty(this, nameof(Profiles), scheduler: RxApp.MainThreadScheduler);
 
-        OpenProfileManagerInteraction = new Interaction<Unit, Unit>();
-        OpenProfileManager = ReactiveCommand.CreateFromTask(async () =>
-        {
-            await OpenProfileManagerInteraction.Handle(Unit.Default);
-        });
+        this.WhenActivated((CompositeDisposable disposables) => { LoadProfilesCommand.Execute().Subscribe(); });
+    }
 
-        this.WhenActivated((CompositeDisposable disposables) =>
-        {
-            LoadProfiles.Execute().Subscribe();
-        });
+    [ReactiveCommand]
+    private async Task<IEnumerable<ProfileInstanceViewModel>> LoadProfiles() => m_profileService.GetProfileInstances().Select(p => new ProfileInstanceViewModel(p));
+
+    [ReactiveCommand]
+    private async Task OpenProfileManager()
+    {
+        await OpenProfileManagerInteraction.Handle(Unit.Default);
+        await LoadProfilesCommand.Execute();
     }
 }

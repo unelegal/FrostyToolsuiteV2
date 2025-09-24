@@ -46,6 +46,8 @@ public static class ProfilesLibrary
 
     public static readonly Dictionary<int, string> SharedBundles = new();
 
+    public static IReadOnlyList<Profile> Profiles => s_profiles;
+
     private static Profile? s_effectiveProfile;
     private static bool s_profilesLoaded;
     private static readonly List<Profile> s_profiles = new();

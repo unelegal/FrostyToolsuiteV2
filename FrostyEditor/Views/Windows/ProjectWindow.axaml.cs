@@ -1,6 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Reactive;
 using System.Reactive.Disposables;
+using Autofac;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
@@ -18,9 +20,23 @@ public partial class ProjectWindow : ReactiveWindow<ProjectWindowViewModel>
         {
             this.ViewModel!.CreateProjectInteraction.RegisterHandler(async interaction =>
             {
-                var dialogWindow = new NewProjectWindow { DataContext = this.CreateInstance<NewProjectWindowViewModel>() };
+                var dialogWindow = new NewProjectWindow { DataContext = App.Locator.Resolve<NewProjectWindowViewModel>() };
 
                 interaction.SetOutput(await dialogWindow.ShowDialog<string?>(this));
+            }).DisposeWith(disposables);
+
+            this.ViewModel!.OpenProfileManagerInteraction.RegisterHandler(async interaction =>
+            {
+                var dialogWindow = new ProfileManagerWindow() { DataContext = App.Locator.Resolve<ProfileManagerViewModel>() };
+
+                await dialogWindow.ShowDialog(this);
+                interaction.SetOutput(Unit.Default);
+            }).DisposeWith(disposables);
+
+            this.ViewModel!.OpenKeyManagerInteraction.RegisterHandler(async interaction =>
+            {
+                // TODO
+                interaction.SetOutput(Unit.Default);
             }).DisposeWith(disposables);
 
             this.ViewModel!.OpenProjectInteraction.RegisterHandler(async interaction =>

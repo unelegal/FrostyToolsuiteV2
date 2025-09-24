@@ -1,0 +1,103 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vControls="using:FrostyEditor.Views.Controls"
+        xmlns:vmControls="using:FrostyEditor.ViewModels.Controls"
+        xmlns:vmWindows="using:FrostyEditor.ViewModels.Windows"
+        xmlns:lang="using:FrostyEditor.Assets.Lang"
+        xmlns:markup="using:FrostyEditor.Utilities.MarkupExtensions"
+        mc:Ignorable="d" d:DesignWidth="600" d:DesignHeight="450"
+        x:Class="FrostyEditor.Views.Windows.NewProfileWindow"
+        x:DataType="vmWindows:NewProfileWindowViewModel"
+        Design.DataContext="{markup:DesignLocator {x:Type vmWindows:NewProfileWindowViewModel}}"
+        Title="New Profile"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        ExtendClientAreaToDecorationsHint="True"
+        Width="600" Height="450"
+        CanResize="False">
+
+  <Panel>
+    <ExperimentalAcrylicBorder IsHitTestVisible="False">
+      <ExperimentalAcrylicBorder.Material>
+        <ExperimentalAcrylicMaterial
+          BackgroundSource="Digger"
+          TintColor="{DynamicResource SystemChromeLowColor}"
+          TintOpacity="1"
+          MaterialOpacity="0.65" />
+      </ExperimentalAcrylicBorder.Material>
+    </ExperimentalAcrylicBorder>
+
+    <Grid RowDefinitions="Auto, Auto, Auto, *, Auto">
+      <TextBlock Grid.Row="0" Text="Add new profile" FontSize="16" Margin="10" />
+      <Separator Grid.Row="1" Margin="5 0" />
+      <Grid Grid.Row="2" RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="Auto, *">
+        <TextBlock Grid.Row="0" Grid.Column="0"
+                   Text="Path" VerticalAlignment="Center" Margin="20 10" />
+        <TextBox Grid.Row="0" Grid.Column="1" Margin="5" HorizontalAlignment="Stretch" IsReadOnly="True"
+                 Text="{Binding Profile.GamePath}">
+          <TextBox.InnerRightContent>
+            <Button Background="Transparent" Padding="10 0" VerticalAlignment="Stretch"
+                    Command="{Binding PickFileCommand}">
+              <PathIcon Data="{StaticResource IconFolderRegular}" />
+            </Button>
+          </TextBox.InnerRightContent>
+        </TextBox>
+
+        <TextBlock Grid.Row="1" Grid.Column="0"
+                   Text="Profile Name" VerticalAlignment="Center" Margin="20 10" />
+        <TextBox Grid.Row="1" Grid.Column="1" Margin="5" HorizontalAlignment="Left" Width="300"
+                 Text="{Binding Profile.Name}" IsEnabled="{Binding IsValidPath}" />
+
+        <TextBlock Grid.Row="2" Grid.Column="0"
+                   Text="Profile Slug" VerticalAlignment="Center" Margin="20 10" />
+        <TextBox Grid.Row="2" Grid.Column="1" Margin="5" HorizontalAlignment="Left" Width="300"
+                 Text="{Binding Profile.Slug}" IsEnabled="{Binding IsValidPath}" />
+
+        <TextBlock Grid.Row="3" Grid.Column="0"
+                   Text="Profile Key" VerticalAlignment="Center" Margin="20 10" />
+        <TextBox Grid.Row="3" Grid.Column="1" Margin="5" HorizontalAlignment="Left" Width="250" IsEnabled="False"
+                 Text="{Binding Profile.ProfileKey}" Classes.Valid="{Binding IsValidProfileKey}">
+          <TextBox.Styles>
+            <Style Selector="TextBox.Valid">
+              <Style.Setters>
+                <Setter Property="Foreground" Value="LightGreen" />
+              </Style.Setters>
+            </Style>
+            <Style Selector="TextBox:not(.Valid)">
+              <Style.Setters>
+                <Setter Property="Foreground" Value="IndianRed" />
+              </Style.Setters>
+            </Style>
+          </TextBox.Styles>
+        </TextBox>
+      </Grid>
+      <StackPanel Grid.Row="3" Orientation="Vertical" IsVisible="{Binding RequiresAnyKey}">
+        <Separator Margin="5" />
+        <TextBlock Text="Keys" Margin="20 10" />
+        <Grid RowDefinitions="Auto, Auto, Auto" ColumnDefinitions="Auto, *">
+          <TextBlock Grid.Row="0" Grid.Column="0" IsVisible="{Binding RequiresCasKey}"
+                     Text="CAS Key" VerticalAlignment="Center" Margin="20 10" />
+          <TextBox Grid.Row="0" Grid.Column="1" Margin="5" HorizontalAlignment="Left" Width="300"
+                   Text="{Binding Profile.CasKey, Converter={StaticResource HexConverter}}" IsVisible="{Binding RequiresCasKey}" />
+
+          <TextBlock Grid.Row="1" Grid.Column="0" IsVisible="{Binding RequiresBundleKey}"
+                     Text="Bundle Key" VerticalAlignment="Center" Margin="20 10" />
+          <TextBox Grid.Row="1" Grid.Column="1" Margin="5" HorizontalAlignment="Left" Width="300"
+                   Text="{Binding Profile.BundleKey, Converter={StaticResource HexConverter}}" IsVisible="{Binding RequiresBundleKey}" />
+
+          <TextBlock Grid.Row="2" Grid.Column="0" IsVisible="{Binding RequiresInitFsKey}"
+                     Text="InitFS Key" VerticalAlignment="Center" Margin="20 10" />
+          <TextBox Grid.Row="2" Grid.Column="1" Margin="5" HorizontalAlignment="Left" Width="300"
+                   Text="{Binding Profile.InitFsKey, Converter={StaticResource HexConverter}}" IsVisible="{Binding RequiresInitFsKey}" />
+        </Grid>
+      </StackPanel>
+      <StackPanel Grid.Row="4" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="5" Margin="10">
+        <Button Content="Create" Command="{Binding CreateCommand}" />
+        <Button Content="Cancel" Command="{Binding CancelCommand}" />
+      </StackPanel>
+    </Grid>
+  </Panel>
+
+</Window>

@@ -1,9 +1,7 @@
 using System;
-using System.Threading.Tasks;
-using Avalonia.Media.Imaging;
 using FrostyEditor.Models;
 
-namespace FrostyEditor.ViewModels.Controls;
+namespace FrostyEditor.ViewModels.Data;
 
 public class RecentProjectViewModel : ViewModelBase
 {

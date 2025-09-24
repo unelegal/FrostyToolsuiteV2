@@ -3,34 +3,25 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using FrostyEditor.Services;
 using FrostyEditor.ViewModels.Controls;
+using Newtonsoft.Json.Converters;
 using ReactiveUI;
+using ReactiveUI.SourceGenerators;
 
 namespace FrostyEditor.ViewModels.Windows;
 
-public class ProjectWindowViewModel : ViewModelBase
+public partial class ProjectWindowViewModel : ViewModelBase
 {
-    private readonly IRecentProjectsService m_recentProjectsService;
+    public required IRecentProjectsService RecentProjectsService { private get; init; }
 
-    public RecentProjectsPaneViewModel RecentProjects { get; }
+    public required RecentProjectsPaneViewModel RecentProjects { get; init; }
 
-    public Interaction<Unit, string?> CreateProjectInteraction { get; }
-    public Interaction<Unit, string?> OpenProjectInteraction { get; }
+    public Interaction<Unit, string?> CreateProjectInteraction { get; } = new();
+    public Interaction<Unit, string?> OpenProjectInteraction { get; } = new();
+    public Interaction<Unit, Unit> OpenProfileManagerInteraction { get; } = new();
+    public Interaction<Unit, Unit> OpenKeyManagerInteraction { get; } = new();
 
-    public ReactiveCommand<Unit, Unit> CreateProjectCommand { get; }
-    public ReactiveCommand<Unit, Unit> OpenProjectCommand { get; }
-
-    public ProjectWindowViewModel(RecentProjectsPaneViewModel recentProjectsPaneViewModel, IRecentProjectsService recentProjectsService)
-    {
-        m_recentProjectsService = recentProjectsService;
-
-        RecentProjects = recentProjectsPaneViewModel;
-        CreateProjectInteraction =  new Interaction<Unit, string?>();
-        OpenProjectInteraction = new Interaction<Unit, string?>();
-        CreateProjectCommand = ReactiveCommand.CreateFromTask(CreateProjectAsync);
-        OpenProjectCommand = ReactiveCommand.CreateFromTask(OpenProjectAsync);
-    }
-
-    private async Task CreateProjectAsync()
+    [ReactiveCommand]
+    private async Task CreateProject()
     {
         string? projectPath = await CreateProjectInteraction.Handle(Unit.Default);
         if (projectPath is null)
@@ -38,11 +29,12 @@ public class ProjectWindowViewModel : ViewModelBase
             return;
         }
 
-        await m_recentProjectsService.ProjectOpened(projectPath);
-        await RecentProjects.LoadRecentProjects.Execute();
+        await RecentProjectsService.ProjectOpened(projectPath);
+        await RecentProjects.LoadRecentProjectsCommand.Execute();
     }
 
-    private async Task OpenProjectAsync()
+    [ReactiveCommand]
+    private async Task OpenProject()
     {
         string? chosenPath = await OpenProjectInteraction.Handle(Unit.Default);
         if (chosenPath is null)
@@ -50,8 +42,13 @@ public class ProjectWindowViewModel : ViewModelBase
             return;
         }
 
-        await m_recentProjectsService.ProjectOpened(chosenPath);
-        await RecentProjects.LoadRecentProjects.Execute();
+        await RecentProjectsService.ProjectOpened(chosenPath);
+        await RecentProjects.LoadRecentProjectsCommand.Execute();
     }
 
+    [ReactiveCommand]
+    private async Task OpenProfileManager() => await OpenProfileManagerInteraction.Handle(Unit.Default);
+
+    [ReactiveCommand]
+    private async Task OpenKeyManager() => await OpenKeyManagerInteraction.Handle(Unit.Default);
 }

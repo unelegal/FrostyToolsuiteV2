@@ -43,17 +43,21 @@
 
         <TextBlock Grid.Row="0" Grid.Column="0"
                    Text="Mod Name" VerticalAlignment="Center" Margin="20 10" />
-        <TextBox Grid.Row="0" Grid.Column="1" Margin="5" HorizontalAlignment="Left" Width="300" />
+        <TextBox Grid.Row="0" Grid.Column="1" Margin="5" HorizontalAlignment="Left" Width="300"
+                 Text="{Binding ModName}" />
 
         <TextBlock Grid.Row="1" Grid.Column="0"
                    Text="Mod Version" VerticalAlignment="Center" Margin="20 10" />
-        <TextBox Grid.Row="1" Grid.Column="1" Margin="5" HorizontalAlignment="Left" Width="150" />
+        <TextBox Grid.Row="1" Grid.Column="1" Margin="5" HorizontalAlignment="Left" Width="150"
+                 Text="{Binding ModVersion}" />
 
         <TextBlock Grid.Row="2" Grid.Column="0"
                    Text="Path" VerticalAlignment="Center" Margin="20 10" />
-        <TextBox Grid.Row="2" Grid.Column="1" Margin="5" HorizontalAlignment="Left" Width="500" IsReadOnly="True">
+        <TextBox Grid.Row="2" Grid.Column="1" Margin="5" HorizontalAlignment="Left" Width="500" IsReadOnly="True"
+                 Text="{Binding ProjectPath}">
           <TextBox.InnerRightContent>
-            <Button Background="Transparent" Padding="10 0" VerticalAlignment="Stretch">
+            <Button Background="Transparent" Padding="10 0" VerticalAlignment="Stretch"
+                    Command="{Binding PickFolderCommand}">
               <PathIcon Data="{StaticResource IconFolderRegular}" />
             </Button>
           </TextBox.InnerRightContent>
