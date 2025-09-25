@@ -4,6 +4,7 @@ using System.Reactive;
 using System.Reactive.Linq;
 using System.Runtime.Intrinsics;
 using System.Threading.Tasks;
+using Avalonia.Platform.Storage;
 using FrostyEditor.Models;
 using FrostyEditor.Services;
 using FrostyEditor.ViewModels.Data;
@@ -19,11 +20,9 @@ public partial class NewProfileWindowViewModel : ViewModelBase
 {
     private readonly IProfileService m_profileService;
 
-    public ProfileInstanceViewModel Profile { get; } = new();
+    public required IDialogService DialogService { private get; init; }
 
-    public Interaction<Unit, Unit> CloseDialogInteraction { get; } = new();
-    public Interaction<Unit, Unit> CloseDialogWithDataIntegration { get; } = new();
-    public Interaction<Unit, string?> PickFileInteraction { get; } = new();
+    public ProfileInstanceViewModel Profile { get; } = new();
 
     [ObservableAsProperty]
     private bool m_isValidPath;
@@ -125,13 +124,26 @@ public partial class NewProfileWindowViewModel : ViewModelBase
     }
 
     [ReactiveCommand(CanExecute = nameof(m_canCreateProfile))]
-    private async Task Create() => await CloseDialogWithDataIntegration.Handle(Unit.Default);
+    private async Task Create(string slug) => await DialogService.CloseCurrentWindowWithData.Handle(slug);
 
     [ReactiveCommand]
-    private async Task Cancel() => await CloseDialogInteraction.Handle(Unit.Default);
+    private async Task Cancel() => await DialogService.CloseCurrentWindow.Handle(Unit.Default);
 
     [ReactiveCommand]
-    private async Task<string?> PickFile() => await PickFileInteraction.Handle(Unit.Default);
+    private async Task<string?> PickFile()
+    {
+        var files = await DialogService.OpenFilePicker.Handle(new FilePickerOpenOptions
+        {
+            Title = "Choose a game",
+            AllowMultiple = false,
+            FileTypeFilter =
+            [
+                new("Game Executable") { Patterns = ["*.exe"] }
+            ]
+        });
+
+        return files.Count > 0 ? files[0].TryGetLocalPath() : null;
+    }
 
     [ReactiveCommand(CanExecute = nameof(m_canCheckIfValidProfileKey))]
     private async Task<bool> CheckIfValidProfile(string profileKey) => m_profileService.IsValidProfileKey(profileKey);

@@ -21,9 +21,9 @@ public partial class ProfilePickerViewModel : ViewModelBase, IActivatableViewMod
 {
     private readonly IProfileService m_profileService;
 
-    public ViewModelActivator Activator { get; } = new();
+    public required IDialogService DialogService { private get; init; }
 
-    public Interaction<Unit, Unit> OpenProfileManagerInteraction { get; } = new();
+    public ViewModelActivator Activator { get; } = new();
 
     [ObservableAsProperty]
     private IEnumerable<ProfileInstanceViewModel> m_profiles = [];
@@ -46,7 +46,7 @@ public partial class ProfilePickerViewModel : ViewModelBase, IActivatableViewMod
     [ReactiveCommand]
     private async Task OpenProfileManager()
     {
-        await OpenProfileManagerInteraction.Handle(Unit.Default);
+        await DialogService.OpenProfileManager.Handle(Unit.Default);
         await LoadProfilesCommand.Execute();
     }
 }

@@ -1,14 +1,15 @@
 ﻿using System.Reflection;
 using Autofac;
+using Avalonia.Controls;
 using Module = Autofac.Module;
 
 namespace FrostyEditor.Modules;
 
-public class ViewModelModule : Module
+public class WindowModule : Module
 {
     protected override void Load(ContainerBuilder builder)
     {
         var assembly = Assembly.GetExecutingAssembly();
-        builder.RegisterAssemblyTypes(assembly).Where(t => t.Name.EndsWith("ViewModel")).AsSelf().PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);
+        builder.RegisterAssemblyTypes(assembly).Where(t => t.Name.EndsWith("Window")).AsSelf().As<Window>().InstancePerLifetimeScope();
     }
 }

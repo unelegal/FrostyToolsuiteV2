@@ -6,6 +6,7 @@ using Autofac;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using Avalonia.ReactiveUI;
+using FrostyEditor.Services;
 using FrostyEditor.Utilities;
 using FrostyEditor.ViewModels.Windows;
 using ReactiveUI;
@@ -18,42 +19,18 @@ public partial class ProjectWindow : ReactiveWindow<ProjectWindowViewModel>
     {
         this.WhenActivated(disposables =>
         {
-            this.ViewModel!.CreateProjectInteraction.RegisterHandler(async interaction =>
+            this.ViewModel!.InitProjectInteraction.RegisterHandler(interaction =>
             {
-                var dialogWindow = new NewProjectWindow { DataContext = App.Locator.Resolve<NewProjectWindowViewModel>() };
+                Close();
 
-                interaction.SetOutput(await dialogWindow.ShowDialog<string?>(this));
-            }).DisposeWith(disposables);
-
-            this.ViewModel!.OpenProfileManagerInteraction.RegisterHandler(async interaction =>
-            {
-                var dialogWindow = new ProfileManagerWindow() { DataContext = App.Locator.Resolve<ProfileManagerViewModel>() };
-
-                await dialogWindow.ShowDialog(this);
                 interaction.SetOutput(Unit.Default);
-            }).DisposeWith(disposables);
-
-            this.ViewModel!.OpenKeyManagerInteraction.RegisterHandler(async interaction =>
-            {
-                // TODO
-                interaction.SetOutput(Unit.Default);
-            }).DisposeWith(disposables);
-
-            this.ViewModel!.OpenProjectInteraction.RegisterHandler(async interaction =>
-            {
-                var files = await GetTopLevel(this)!.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-                {
-                    Title = Assets.Lang.Resources.OpenProject,
-                    AllowMultiple = false,
-                    FileTypeFilter =
-                    [
-                        new(Assets.Lang.Resources.FrostyProject) { Patterns = ["*.json"] }
-                    ]
-                });
-
-                interaction.SetOutput(files.Count >= 1 ? files[0].TryGetLocalPath() : null);
             }).DisposeWith(disposables);
         });
         InitializeComponent();
+    }
+
+    public ProjectWindow(ProjectWindowViewModel viewModel) : this()
+    {
+        DataContext = viewModel;
     }
 }

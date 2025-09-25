@@ -16,33 +16,12 @@ public partial class NewProjectWindow : ReactiveWindow<NewProjectWindowViewModel
 {
     public NewProjectWindow()
     {
-        this.WhenActivated(disposables =>
-        {
-            this.ViewModel!.CloseDialogInteraction.RegisterHandler(interaction =>
-            {
-                this.Close(interaction.Input);
-                interaction.SetOutput(Unit.Default);
-            }).DisposeWith(disposables);
-
-            this.ViewModel!.ProfilePickerViewModel.OpenProfileManagerInteraction.RegisterHandler(async interaction =>
-            {
-                var dialogWindow = new ProfileManagerWindow() { DataContext = App.Locator.Resolve<ProfileManagerViewModel>() };
-                await dialogWindow.ShowDialog(this);
-
-                interaction.SetOutput(Unit.Default);
-            });
-
-            this.ViewModel!.PickFolderInteraction.RegisterHandler(async interaction =>
-            {
-                var folders = await GetTopLevel(this)!.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
-                {
-                    Title = "Choose a game",
-                    AllowMultiple = false
-                });
-
-                interaction.SetOutput(folders.Count >= 1 ? folders[0].TryGetLocalPath() : null);
-            });
-        });
+        this.WhenActivated(disposables => { });
         InitializeComponent();
+    }
+
+    public NewProjectWindow(NewProjectWindowViewModel viewModel) : this()
+    {
+        DataContext = viewModel;
     }
 }

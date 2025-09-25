@@ -4,6 +4,7 @@ using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using Avalonia.ReactiveUI;
+using Frosty.Sdk.Profiles;
 using FrostyEditor.Models;
 using FrostyEditor.Utilities;
 using FrostyEditor.ViewModels.Windows;
@@ -15,15 +16,12 @@ public partial class ProfileManagerWindow : ReactiveWindow<ProfileManagerViewMod
 {
     public ProfileManagerWindow()
     {
-        this.WhenActivated(disposables =>
-        {
-            this.ViewModel!.AddProfileInteraction.RegisterHandler(async interaction =>
-            {
-                var dialogWindow = new NewProfileWindow { DataContext = App.Locator.Resolve<NewProfileWindowViewModel>() };
-
-                interaction.SetOutput(await dialogWindow.ShowDialog<ProfileInstance?>(this));
-            }).DisposeWith(disposables);
-        });
+        this.WhenActivated(disposables => { });
         InitializeComponent();
+    }
+
+    public ProfileManagerWindow(ProfileManagerViewModel viewModel) : this()
+    {
+        DataContext = viewModel;
     }
 }

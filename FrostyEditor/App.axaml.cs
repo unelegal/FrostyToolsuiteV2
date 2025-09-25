@@ -3,6 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Data.Core.Plugins;
 using System.Linq;
 using Autofac;
+using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
 using FrostyEditor.Utilities;
 using FrostyEditor.ViewModels.Windows;
@@ -12,16 +13,22 @@ namespace FrostyEditor;
 
 public partial class App : Application
 {
-    public static IContainer Locator { get; private set; }
+    private readonly ILifetimeScope m_scope;
+    public static ILifetimeScope? DesignContainer;
 
     public App(IContainer container)
     {
-        Locator = container;
+        m_scope = container.BeginLifetimeScope();
+
+        if (Design.IsDesignMode)
+        {
+            DesignContainer = m_scope;
+        }
     }
 
     public override void Initialize()
     {
-        DataTemplates.Add(Locator.Resolve<ViewLocator>());
+        DataTemplates.Add(m_scope.Resolve<ViewLocator>());
         AvaloniaXamlLoader.Load(this);
     }
 
@@ -32,7 +39,7 @@ public partial class App : Application
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit.
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
-            desktop.MainWindow = new ProjectWindow { DataContext = Locator.Resolve<ProjectWindowViewModel>() };
+            desktop.MainWindow = m_scope.BeginLifetimeScope().Resolve<ProjectWindow>();
         }
 
         base.OnFrameworkInitializationCompleted();

@@ -2,6 +2,9 @@
 using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
+using Avalonia.Platform.Storage;
+using Frosty.ModSupport.Project;
+using FrostyEditor.Services;
 using FrostyEditor.ViewModels.Controls;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -12,9 +15,9 @@ public partial class NewProjectWindowViewModel : ViewModelBase
 {
     public required ProfilePickerViewModel ProfilePickerViewModel { get; init; }
 
-    public Interaction<string?, Unit> CloseDialogInteraction { get; } = new();
+    public required IProjectService ProjectService { private get; init; }
 
-    public Interaction<Unit, string?> PickFolderInteraction { get; } = new();
+    public required IDialogService DialogService { private get; init; }
 
     [Reactive]
     private string m_modName = string.Empty;
@@ -48,12 +51,23 @@ public partial class NewProjectWindowViewModel : ViewModelBase
     [ReactiveCommand(CanExecute = nameof(m_canCreateProject))]
     private async Task Create()
     {
-        await CloseDialogInteraction.Handle(null);
+        string? path = ProjectService.CreateProject(ModName, ModVersion, ProjectPath, ProfilePickerViewModel.SelectedProfile!.Slug);
+
+        await DialogService.CloseCurrentWindowWithData.Handle(path);
     }
 
     [ReactiveCommand]
-    private async Task Cancel() => await CloseDialogInteraction.Handle(null);
+    private async Task Cancel() => await DialogService.CloseCurrentWindow.Handle(Unit.Default);
 
     [ReactiveCommand]
-    private async Task<string?> PickFolder() => await PickFolderInteraction.Handle(Unit.Default);
+    private async Task<string?> PickFolder()
+    {
+        var folders = await DialogService.OpenFolderPicker.Handle(new FolderPickerOpenOptions()
+        {
+            Title = "Choose a game",
+            AllowMultiple = false
+        });
+
+        return  folders.Count > 0 ? folders[0].TryGetLocalPath() : null;
+    }
 }

@@ -34,7 +34,7 @@ public partial class RecentProjectsPaneViewModel : ViewModelBase, IActivatableVi
     }
 
     [ReactiveCommand]
-    private async Task<IEnumerable<RecentProjectViewModel>> LoadRecentProjectsAsync()
+    private async Task<IEnumerable<RecentProjectViewModel>> LoadRecentProjects()
     {
         return (await m_recentProjectsService.GetRecentProjectsAsync()).Select(entry => new RecentProjectViewModel(entry)).ToImmutableList();
     }

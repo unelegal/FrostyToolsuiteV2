@@ -20,9 +20,9 @@ public partial class ProfileManagerViewModel : ViewModelBase, IActivatableViewMo
 {
     public required IProfileService ProfileService { private get; init; }
 
-    public ViewModelActivator Activator { get; } = new();
+    public required IDialogService DialogService { private get; init; }
 
-    public Interaction<Unit, ProfileInstance?> AddProfileInteraction { get; } = new();
+    public ViewModelActivator Activator { get; } = new();
 
     [ObservableAsProperty]
     private IEnumerable<ProfileInstanceViewModel> m_profiles = [];
@@ -52,13 +52,13 @@ public partial class ProfileManagerViewModel : ViewModelBase, IActivatableViewMo
     [ReactiveCommand]
     private async Task AddProfile()
     {
-        ProfileInstance? newProfile = await AddProfileInteraction.Handle(Unit.Default);
-        if (newProfile is null)
+        string? newProfileSlug = await DialogService.OpenAddProfile.Handle(Unit.Default);
+        if (newProfileSlug is null)
         {
             return;
         }
 
-        ProfileService.AddProfileInstance(newProfile);
+        // TODO: Change to Dynamic Data and select the slug in the combobox
         await LoadProfilesCommand.Execute();
     }
 

@@ -9,6 +9,8 @@ namespace FrostyEditor;
 
 public class ViewLocator : IDataTemplate
 {
+    public required ILifetimeScope Container { private get; init; }
+
     public Control? Build(object? param)
     {
         if (param is null)
@@ -24,7 +26,7 @@ public class ViewLocator : IDataTemplate
             return new TextBlock { Text = "Not Found: " + name };
         }
 
-        return (Control) App.Locator.Resolve(type);
+        return (Control) Container.Resolve(type);
     }
 
     public bool Match(object? data)
