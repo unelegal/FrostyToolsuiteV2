@@ -9,6 +9,6 @@ public class ViewModelModule : Module
     protected override void Load(ContainerBuilder builder)
     {
         var assembly = Assembly.GetExecutingAssembly();
-        builder.RegisterAssemblyTypes(assembly).Where(t => t.Name.EndsWith("ViewModel")).AsSelf().PropertiesAutowired(PropertyWiringOptions.AllowCircularDependencies);
+        builder.RegisterAssemblyTypes(assembly).Where(t => t.Name.EndsWith("ViewModel")).AsSelf();
     }
 }

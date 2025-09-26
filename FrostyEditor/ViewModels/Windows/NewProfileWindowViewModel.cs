@@ -124,7 +124,12 @@ public partial class NewProfileWindowViewModel : ViewModelBase
     }
 
     [ReactiveCommand(CanExecute = nameof(m_canCreateProfile))]
-    private async Task Create(string slug) => await DialogService.CloseCurrentWindowWithData.Handle(slug);
+    private async Task Create(string slug)
+    {
+        m_profileService.AddProfileInstance(Profile.ToModel());
+
+        await DialogService.CloseCurrentWindowWithData.Handle(slug);
+    }
 
     [ReactiveCommand]
     private async Task Cancel() => await DialogService.CloseCurrentWindow.Handle(Unit.Default);

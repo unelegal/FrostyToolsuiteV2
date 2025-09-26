@@ -1,20 +1,19 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DynamicData;
 using FrostyEditor.Models;
 
 namespace FrostyEditor.Services.Implementation.Mock;
 
 public class DesignProfileService : IProfileService
 {
-    private readonly object m_profileListLock = new();
-    private readonly HashSet<ProfileInstance> m_profileInstances;
+    private readonly SourceCache<ProfileInstance, string> m_profileInstances = new(t => t.Slug);
 
     public DesignProfileService()
     {
-        m_profileInstances = new(new ProfileInstance.SlugComparer());
-
-        m_profileInstances.UnionWith([
+        m_profileInstances.AddOrUpdate([
             new ProfileInstance { Slug = "battlefield6", Name = "Battlefield 6", GamePath = "C:\\Game\\Path\\Game.exe", ProfileKey = "bf6event" },
             new ProfileInstance { Slug = "bf2042", Name = "Battlefield 2042", GamePath = "C:\\Game\\Path\\Game.exe", ProfileKey = "BF2042" },
             new ProfileInstance { Slug = "whatever1", Name = "Cool Game", GamePath = "C:\\Game\\Path\\Game.exe", ProfileKey = "coolgame" },
@@ -27,28 +26,26 @@ public class DesignProfileService : IProfileService
         ]);
     }
 
-    public IEnumerable<ProfileInstance> GetProfileInstances()
+    public IObservable<IChangeSet<ProfileInstance, string>> ConnectProfiles()
     {
-        lock (m_profileListLock)
-        {
-            return m_profileInstances.ToList();
-        }
+        return m_profileInstances.Connect();
+    }
+
+    public void RefreshProfiles()
+    {
+
     }
 
     public bool AddProfileInstance(ProfileInstance profile)
     {
-        lock (m_profileListLock)
-        {
-            return m_profileInstances.Add(profile);
-        }
+        m_profileInstances.AddOrUpdate(profile);
+        return true;
     }
 
     public bool RemoveProfileInstance(string slug)
     {
-        lock (m_profileListLock)
-        {
-            return m_profileInstances.RemoveWhere(x => x.Slug == slug) >= 1;
-        }
+        m_profileInstances.RemoveKey(slug);
+        return true;
     }
 
     public bool IsValidProfileKey(string profileKey)

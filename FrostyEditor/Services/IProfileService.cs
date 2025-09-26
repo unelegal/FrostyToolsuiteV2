@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using DynamicData;
 using FrostyEditor.Models;
 
 namespace FrostyEditor.Services;
@@ -7,11 +9,15 @@ namespace FrostyEditor.Services;
 public interface IProfileService
 {
     /// <summary>
-    /// Get all profile instances. Might read from disk, make sure to only
-    /// call this from the thread pool!
+    /// Get an observable ChangeSet of the loaded Profiles
     /// </summary>
     /// <returns></returns>
-    public IEnumerable<ProfileInstance> GetProfileInstances();
+    public IObservable<IChangeSet<ProfileInstance, string>> ConnectProfiles();
+
+    /// <summary>
+    /// Refreshes the profile instances from disk. Make sure to only call from the thread pool!
+    /// </summary>
+    public void RefreshProfiles();
 
     /// <summary>
     /// Add a new profile instance. Writes to disk, make sure to only

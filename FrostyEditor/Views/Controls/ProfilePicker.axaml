@@ -14,7 +14,7 @@
   
   <ComboBox HorizontalAlignment="Stretch"
                          VerticalAlignment="Top" PlaceholderText="Select a Profile" MaxDropDownHeight="200"
-                         ItemsSource="{Binding Profiles}"
+                         ItemsSource="{Binding ProfileInstances}"
                          SelectedItem="{Binding SelectedProfile}">
     <ComboBox.ItemTemplate>
       <DataTemplate>

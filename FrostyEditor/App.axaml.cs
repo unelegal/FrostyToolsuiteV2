@@ -39,7 +39,13 @@ public partial class App : Application
             // Avoid duplicate validations from both Avalonia and the CommunityToolkit.
             // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
             DisableAvaloniaDataAnnotationValidation();
-            desktop.MainWindow = m_scope.BeginLifetimeScope().Resolve<ProjectWindow>();
+
+            // TODO: Global window lifetime manager that disposes scopes
+            var scope = m_scope.BeginLifetimeScope(builder =>
+            {
+                builder.RegisterType<ProjectWindow>().As<Window>().InstancePerLifetimeScope();
+            });
+            desktop.MainWindow = scope.Resolve<Window>();
         }
 
         base.OnFrameworkInitializationCompleted();

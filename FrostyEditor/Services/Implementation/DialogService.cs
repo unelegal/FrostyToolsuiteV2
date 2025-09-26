@@ -13,7 +13,7 @@ namespace FrostyEditor.Services.Implementation;
 
 public class DialogService : IDialogService
 {
-    public required ILifetimeScope ServiceContainer { private get; init; }
+    public required ILifetimeScope ServiceScope { private get; init; }
 
     private readonly Lazy<Window> m_lazyOwningWindow;
     private Window m_owningWindow => m_lazyOwningWindow.Value;
@@ -85,15 +85,21 @@ public class DialogService : IDialogService
 
     private async Task<TRet> ShowDialogAsync<TWindow, TRet>() where TWindow : Window
     {
-        await using var scope = ServiceContainer.BeginLifetimeScope();
-        var dialog = scope.Resolve<TWindow>();
+        await using var scope = ServiceScope.BeginLifetimeScope(builder =>
+        {
+            builder.RegisterType<TWindow>().As<Window>().InstancePerLifetimeScope();
+        });
+        var dialog = scope.Resolve<Window>();
         return await dialog.ShowDialog<TRet>(m_owningWindow);
     }
 
     private async Task ShowDialogAsync<TWindow>() where TWindow : Window
     {
-        await using var scope = ServiceContainer.BeginLifetimeScope();
-        var dialog = scope.Resolve<TWindow>();
+        await using var scope = ServiceScope.BeginLifetimeScope(builder =>
+        {
+            builder.RegisterType<TWindow>().As<Window>().InstancePerLifetimeScope();
+        });
+        var dialog = scope.Resolve<Window>();
         await dialog.ShowDialog(m_owningWindow);
     }
 }

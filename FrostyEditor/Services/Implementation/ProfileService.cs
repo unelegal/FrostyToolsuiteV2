@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using DynamicData;
 using Frosty.Sdk;
 using Frosty.Sdk.Utils;
 using FrostyEditor.Models;
@@ -16,66 +17,56 @@ public class ProfileService : IProfileService
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FrostyEditorV2", "ProfileInstances.json");
 
     private readonly object m_profileListLock = new();
-    private readonly HashSet<ProfileInstance> m_profileInstances;
-    private bool m_initialized = false;
+    private readonly SourceCache<ProfileInstance, string> m_profileInstances = new(t => t.Slug);
 
     public ProfileService()
     {
-        m_profileInstances = new(new ProfileInstance.SlugComparer());
-
-        /*m_profileInstances.UnionWith([
-            new ProfileInstance { Slug = "battlefield6", Name = "Battlefield 6", GamePath = "C:\\Game\\Path\\Game.exe", ProfileKey = "bf6event" },
-            new ProfileInstance { Slug = "bf2042", Name = "Battlefield 2042", GamePath = "C:\\Game\\Path\\Game.exe", ProfileKey = "BF2042" },
-            new ProfileInstance { Slug = "whatever1", Name = "Cool Game", GamePath = "C:\\Game\\Path\\Game.exe", ProfileKey = "coolgame" },
-            new ProfileInstance { Slug = "whatever2", Name = "Cool Game", GamePath = "C:\\Game\\Path\\Game.exe", ProfileKey = "coolgame" },
-            new ProfileInstance { Slug = "whatever3", Name = "Cool Game", GamePath = "C:\\Game\\Path\\Game.exe", ProfileKey = "coolgame" },
-            new ProfileInstance { Slug = "whatever4", Name = "Cool Game", GamePath = "C:\\Game\\Path\\Game.exe", ProfileKey = "coolgame" },
-            new ProfileInstance { Slug = "whatever5", Name = "Cool Game", GamePath = "C:\\Game\\Path\\Game.exe", ProfileKey = "coolgame" },
-            new ProfileInstance { Slug = "whatever6", Name = "Cool Game", GamePath = "C:\\Game\\Path\\Game.exe", ProfileKey = "coolgame" },
-            new ProfileInstance { Slug = "whatever7", Name = "Cool Game", GamePath = "C:\\Game\\Path\\Game.exe", ProfileKey = "coolgame" }
-        ]);*/
-
         // TEMP
         Utils.BaseDirectory = Path.GetDirectoryName(AppContext.BaseDirectory) ?? string.Empty;
 
         ProfilesLibrary.Initialize();
     }
 
-    private void LoadProfileInstancesFromDisk()
+    public IObservable<IChangeSet<ProfileInstance, string>> ConnectProfiles()
+    {
+        // Technically no lock needed, but there's a warning otherwise
+        lock (m_profileListLock)
+        {
+            return m_profileInstances.Connect();
+        }
+    }
+
+    public void RefreshProfiles()
+    {
+        LoadProfileInstancesFromDisk();
+    }
+
+    private IEnumerable<ProfileInstance> LoadProfileInstancesFromDisk()
     {
         if (!File.Exists(s_profileInstancesFile))
         {
-            return;
+            return [];
         }
 
         lock (m_profileListLock)
         {
             string content = File.ReadAllText(s_profileInstancesFile);
-            m_profileInstances.UnionWith(JsonConvert.DeserializeObject<IEnumerable<ProfileInstance>>(content) ?? []);
-        }
-}
+            var loaded = JsonConvert.DeserializeObject<IList<ProfileInstance>>(content) ?? [];
 
-    private void SaveProfileInstancesToDisk()
+            m_profileInstances.EditDiff(loaded, EqualityComparer<ProfileInstance>.Default);
+
+            return loaded;
+        }
+    }
+
+    private void SaveProfileInstancesToDisk(IEnumerable<ProfileInstance> profileInstances)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(s_profileInstancesFile)!);
 
         lock (m_profileListLock)
         {
-            File.WriteAllText(s_profileInstancesFile, JsonConvert.SerializeObject(m_profileInstances.ToList()));
-        }
-    }
-
-    public IEnumerable<ProfileInstance> GetProfileInstances()
-    {
-        lock (m_profileListLock)
-        {
-            if (!m_initialized)
-            {
-                LoadProfileInstancesFromDisk();
-                m_initialized = true;
-            }
-
-            return m_profileInstances.ToList();
+            File.WriteAllText(s_profileInstancesFile, JsonConvert.SerializeObject(profileInstances));
+            m_profileInstances.EditDiff(profileInstances, EqualityComparer<ProfileInstance>.Default);
         }
     }
 
@@ -83,9 +74,11 @@ public class ProfileService : IProfileService
     {
         lock (m_profileListLock)
         {
-            if (m_profileInstances.Add(profile))
+            var profiles = LoadProfileInstancesFromDisk().ToHashSet(new ProfileInstance.SlugComparer());
+
+            if (profiles.Add(profile))
             {
-                SaveProfileInstancesToDisk();
+                SaveProfileInstancesToDisk(profiles);
                 return true;
             }
 
@@ -97,9 +90,11 @@ public class ProfileService : IProfileService
     {
         lock (m_profileListLock)
         {
-            if (m_profileInstances.RemoveWhere(x => x.Slug == slug) >= 1)
+            var profiles = LoadProfileInstancesFromDisk().ToHashSet(new ProfileInstance.SlugComparer());
+
+            if (profiles.RemoveWhere(p => p.Slug == slug) > 0)
             {
-                SaveProfileInstancesToDisk();
+                SaveProfileInstancesToDisk(profiles);
                 return true;
             }
 

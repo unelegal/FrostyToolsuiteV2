@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Controls.Selection;
+using DynamicData;
 using FrostyEditor.Models;
 using FrostyEditor.Services;
 using FrostyEditor.ViewModels.Data;
@@ -18,35 +20,41 @@ namespace FrostyEditor.ViewModels.Windows;
 
 public partial class ProfileManagerViewModel : ViewModelBase, IActivatableViewModel
 {
-    public required IProfileService ProfileService { private get; init; }
+    private readonly IProfileService m_profileService;
 
     public required IDialogService DialogService { private get; init; }
 
     public ViewModelActivator Activator { get; } = new();
-
-    [ObservableAsProperty]
-    private IEnumerable<ProfileInstanceViewModel> m_profiles = [];
 
     [Reactive]
     private ProfileInstanceViewModel? m_selectedProfile;
 
     private readonly IObservable<bool> m_canRemoveProfile;
 
-    public ProfileManagerViewModel()
+    private readonly ReadOnlyObservableCollection<ProfileInstanceViewModel> m_profileInstances;
+    public ReadOnlyObservableCollection<ProfileInstanceViewModel> ProfileInstances => m_profileInstances;
+
+    public ProfileManagerViewModel(IProfileService profileService)
     {
-        m_profilesHelper = LoadProfilesCommand.ToProperty(this, nameof(Profiles), scheduler: RxApp.MainThreadScheduler);
+        m_profileService = profileService;
 
         m_canRemoveProfile = this
             .WhenAnyValue(x => x.SelectedProfile, (ProfileInstanceViewModel? selected) => selected is not null)
             .ObserveOn(RxApp.MainThreadScheduler);
 
+        m_profileService.ConnectProfiles()
+            .Transform(p => new ProfileInstanceViewModel(p))
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Bind(out m_profileInstances)
+            .Subscribe();
+
         this.WhenActivated((CompositeDisposable disposables) => { LoadProfilesCommand.Execute().Subscribe(); });
     }
 
     [ReactiveCommand]
-    private async Task<IEnumerable<ProfileInstanceViewModel>> LoadProfiles()
+    private async Task LoadProfiles()
     {
-        return ProfileService.GetProfileInstances().Select(x => new ProfileInstanceViewModel(x));
+        m_profileService.RefreshProfiles();
     }
 
     [ReactiveCommand]
@@ -58,8 +66,7 @@ public partial class ProfileManagerViewModel : ViewModelBase, IActivatableViewMo
             return;
         }
 
-        // TODO: Change to Dynamic Data and select the slug in the combobox
-        await LoadProfilesCommand.Execute();
+        // TODO: Change selection
     }
 
     [ReactiveCommand(CanExecute = nameof(m_canRemoveProfile))]
@@ -71,7 +78,6 @@ public partial class ProfileManagerViewModel : ViewModelBase, IActivatableViewMo
         }
 
         // TODO: Are you sure popup
-        ProfileService.RemoveProfileInstance(selectedProfile.Slug);
-        await LoadProfilesCommand.Execute();
+        m_profileService.RemoveProfileInstance(selectedProfile.Slug);
     }
 }

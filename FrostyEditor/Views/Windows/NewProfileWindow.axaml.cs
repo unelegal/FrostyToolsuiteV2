@@ -12,11 +12,14 @@ namespace FrostyEditor.Views.Windows;
 
 public partial class NewProfileWindow : ReactiveWindow<NewProfileWindowViewModel>
 {
-    public NewProfileWindow(NewProfileWindowViewModel viewModel)
+    public NewProfileWindow()
     {
-        DataContext = viewModel;
-
         this.WhenActivated(disposables => { });
         InitializeComponent();
+    }
+
+    public NewProfileWindow(NewProfileWindowViewModel viewModel) : this()
+    {
+        DataContext = viewModel;
     }
 }

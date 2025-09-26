@@ -16,7 +16,8 @@
         Background="Transparent"
         ExtendClientAreaToDecorationsHint="True"
         Width="800" Height="450"
-        CanResize="False">
+        CanResize="False"
+        WindowStartupLocation="CenterOwner">
 
   <Panel>
     <ExperimentalAcrylicBorder IsHitTestVisible="False">
@@ -39,7 +40,7 @@
         </Button>
         <Button Content="Scan"></Button>
       </StackPanel>
-      <ListBox Grid.Row="3" Margin="25 5" ItemsSource="{Binding Profiles}" SelectedItem="{Binding SelectedProfile}"
+      <ListBox Grid.Row="3" Margin="25 5" ItemsSource="{Binding ProfileInstances}" SelectedItem="{Binding SelectedProfile}"
                CornerRadius="5"
                SelectionMode="Single, Toggle">
         <ListBox.ItemTemplate>

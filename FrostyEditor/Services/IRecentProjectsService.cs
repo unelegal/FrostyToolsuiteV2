@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Threading.Tasks;
+using DynamicData;
 using FrostyEditor.Models;
 
 namespace FrostyEditor.Services;
@@ -8,16 +10,20 @@ namespace FrostyEditor.Services;
 public interface IRecentProjectsService
 {
     /// <summary>
-    /// Get the list of recent projects asynchronously
+    /// Get an observable changeset of recent projects
     /// </summary>
     /// <returns></returns>
-    public Task<IEnumerable<RecentProjectEntry>> GetRecentProjectsAsync();
+    public IObservable<IChangeSet<RecentProjectEntry, string>> ConnectRecentProjects();
+
+    /// <summary>
+    /// Refresh the recently opened projects from disk
+    /// </summary>
+    public void RefreshRecentProjects();
 
     /// <summary>
     /// Notify the service that a project has been opened.
     /// Saves updated recent projects list to disk.
     /// </summary>
     /// <param name="path">Path of the project that has been opened</param>
-    /// <returns></returns>
-    public Task ProjectOpened(string path);
+    public void ProjectOpened(string path);
 }

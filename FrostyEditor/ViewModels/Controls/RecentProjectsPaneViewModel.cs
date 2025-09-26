@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Disposables;
+using System.Reactive.Linq;
 using System.Threading.Tasks;
+using DynamicData;
+using DynamicData.Binding;
 using FrostyEditor.Services;
 using FrostyEditor.ViewModels.Data;
 using ReactiveUI;
@@ -18,24 +22,29 @@ public partial class RecentProjectsPaneViewModel : ViewModelBase, IActivatableVi
 
     public ViewModelActivator Activator { get; } = new();
 
-    [ObservableAsProperty]
-    private IEnumerable<RecentProjectViewModel> m_recentProjects = [];
+    private readonly ReadOnlyObservableCollection<RecentProjectViewModel> m_recentProjects;
+    public ReadOnlyObservableCollection<RecentProjectViewModel> RecentProjects => m_recentProjects;
 
     public RecentProjectsPaneViewModel(IRecentProjectsService recentProjectsService)
     {
         m_recentProjectsService = recentProjectsService;
 
-        m_recentProjectsHelper = LoadRecentProjectsCommand.ToProperty(this, nameof(RecentProjects), scheduler: RxApp.MainThreadScheduler);
+        m_recentProjectsService.ConnectRecentProjects()
+            .SortBy(x => x.LastOpened, SortDirection.Descending)
+            .Transform(e => new RecentProjectViewModel(e))
+            .ObserveOn(RxApp.MainThreadScheduler)
+            .Bind(out m_recentProjects)
+            .Subscribe();
 
         this.WhenActivated((CompositeDisposable disposables) =>
         {
-            LoadRecentProjectsCommand.Execute().Subscribe();
+            RefreshRecentProjectsCommand.Execute().Subscribe();
         });
     }
 
     [ReactiveCommand]
-    private async Task<IEnumerable<RecentProjectViewModel>> LoadRecentProjects()
+    private async Task RefreshRecentProjects()
     {
-        return (await m_recentProjectsService.GetRecentProjectsAsync()).Select(entry => new RecentProjectViewModel(entry)).ToImmutableList();
+        m_recentProjectsService.RefreshRecentProjects();
     }
 }

@@ -18,18 +18,39 @@ public class DesignDialogService : IDialogService
 
     public DesignDialogService()
     {
-        OpenProfileManager.RegisterHandler(ctx => { });
+        OpenProfileManager.RegisterHandler(ctx =>
+        {
+            ctx.SetOutput(Unit.Default);
+        });
 
-        OpenCreateProject.RegisterHandler(ctx => { });
+        OpenCreateProject.RegisterHandler(ctx =>
+        {
+            ctx.SetOutput("C:\\Path\\To\\Project\\project.json");
+        });
 
-        OpenFilePicker.RegisterHandler(ctx => { });
+        OpenFilePicker.RegisterHandler(ctx =>
+        {
+            ctx.SetOutput([]);
+        });
 
-        OpenFolderPicker.RegisterHandler(ctx => { });
+        OpenFolderPicker.RegisterHandler(ctx =>
+        {
+            ctx.SetOutput([]);
+        });
 
-        OpenAddProfile.RegisterHandler(interaction => { });
+        OpenAddProfile.RegisterHandler(ctx =>
+        {
+            ctx.SetOutput(null);
+        });
 
-        CloseCurrentWindow.RegisterHandler(interaction => { });
+        CloseCurrentWindow.RegisterHandler(ctx =>
+        {
+            ctx.SetOutput(Unit.Default);
+        });
 
-        CloseCurrentWindowWithData.RegisterHandler(interaction => { });
+        CloseCurrentWindowWithData.RegisterHandler(ctx =>
+        {
+            ctx.SetOutput(Unit.Default);
+        });
     }
 }

@@ -30,7 +30,7 @@ public partial class ProjectWindowViewModel : ViewModelBase
         }
 
         await InitProjectInteraction.Handle(projectPath);
-        await RecentProjectsService.ProjectOpened(projectPath);
+        RecentProjectsService.ProjectOpened(projectPath);
     }
 
     [ReactiveCommand]
@@ -54,7 +54,7 @@ public partial class ProjectWindowViewModel : ViewModelBase
         }
 
         await InitProjectInteraction.Handle(chosenPath);
-        await RecentProjectsService.ProjectOpened(chosenPath);
+        RecentProjectsService.ProjectOpened(chosenPath);
     }
 
     [ReactiveCommand]
