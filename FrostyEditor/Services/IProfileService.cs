@@ -17,7 +17,7 @@ public interface IProfileService
     /// <summary>
     /// Refreshes the profile instances from disk. Make sure to only call from the thread pool!
     /// </summary>
-    public void RefreshProfiles();
+    public Task RefreshProfiles();
 
     /// <summary>
     /// Add a new profile instance. Writes to disk, make sure to only
@@ -25,7 +25,7 @@ public interface IProfileService
     /// </summary>
     /// <param name="profile">The profile instance to add</param>
     /// <returns>True on success, false if a profile with the same slug already exists</returns>
-    public bool AddProfileInstance(ProfileInstance profile);
+    public Task<bool> AddProfileInstance(ProfileInstance profile);
 
     /// <summary>
     /// Delete a profile instance. Writes to disk, make sure to only
@@ -33,7 +33,7 @@ public interface IProfileService
     /// </summary>
     /// <param name="slug">Slug of the instance to remove</param>
     /// <returns>True on success, false if the slug could not be found</returns>
-    public bool RemoveProfileInstance(string slug);
+    public Task<bool> RemoveProfileInstance(string slug);
 
     /// <summary>
     /// Check if a given profile key is valid
@@ -63,5 +63,5 @@ public interface IProfileService
     /// <returns>True if a InitFS key is required</returns>
     public bool RequiresInitFsKey(string profileKey);
 
-    public ProfileInstance? GetProfileInstance(string slug);
+    public Task<ProfileInstance?> GetProfileInstance(string slug);
 }

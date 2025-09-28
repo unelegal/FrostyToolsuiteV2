@@ -9,22 +9,23 @@ namespace FrostyEditor.Services;
 
 public interface IDialogService
 {
-    public Interaction<Unit, Unit> OpenProfileManager { get; }
+    public Task OpenProfileManager();
 
-    public Interaction<Unit, string?> OpenCreateProject { get; }
+    public Task<string?> OpenCreateProject();
 
-    public Interaction<FilePickerOpenOptions, IReadOnlyList<IStorageFile>> OpenFilePicker { get; }
+    public Task<IReadOnlyList<IStorageFile>> OpenFilePicker(FilePickerOpenOptions options);
 
-    public Interaction<FolderPickerOpenOptions, IReadOnlyList<IStorageFolder>> OpenFolderPicker { get; }
+    public Task<IReadOnlyList<IStorageFolder>> OpenFolderPicker(FolderPickerOpenOptions options);
 
     /// <summary>
-    /// Returns the Slug of the created ProfileInstance
+    ///
     /// </summary>
-    public Interaction<Unit, string?> OpenAddProfile { get; }
+    /// <returns>The Slug of the created ProfileInstance</returns>
+    public Task<string?> OpenAddProfile();
 
-    public Interaction<Unit, Unit> CloseCurrentWindow { get; }
-    public Interaction<object?, Unit> CloseCurrentWindowWithData { get; }
+    public void CloseCurrentWindow(object? data = null);
 
-    public Interaction<Window, Unit> SwitchOutCurrentWindow { get; }
-    public Interaction<Unit, Unit> GenerateSdk { get; }
+    public void SwitchOutCurrentWindow(Window newWindow);
+
+    public Task OpenGenerateSdk();
 }

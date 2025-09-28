@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reactive;
+using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using FrostyEditor.Views.Windows;
@@ -9,61 +10,43 @@ namespace FrostyEditor.Services.Implementation.Mock;
 
 public class DesignDialogService : IDialogService
 {
-    public Interaction<Unit, Unit> OpenProfileManager { get; } = new();
-    public Interaction<Unit, string?> OpenCreateProject { get; } = new();
-    public Interaction<FilePickerOpenOptions, IReadOnlyList<IStorageFile>> OpenFilePicker { get; } = new();
-    public Interaction<FolderPickerOpenOptions, IReadOnlyList<IStorageFolder>> OpenFolderPicker { get; } = new();
-    public Interaction<Unit, string?> OpenAddProfile { get; } = new();
-    public Interaction<Unit, Unit> CloseCurrentWindow { get; } = new();
-    public Interaction<object?, Unit> CloseCurrentWindowWithData { get; } = new();
-    public Interaction<Window, Unit> SwitchOutCurrentWindow { get; } = new();
-    public Interaction<Unit, Unit> GenerateSdk { get; } = new();
-
-    public DesignDialogService()
+    public async Task OpenProfileManager()
     {
-        OpenProfileManager.RegisterHandler(ctx =>
-        {
-            ctx.SetOutput(Unit.Default);
-        });
 
-        OpenCreateProject.RegisterHandler(ctx =>
-        {
-            ctx.SetOutput("C:\\Path\\To\\Project\\project.json");
-        });
+    }
 
-        OpenFilePicker.RegisterHandler(ctx =>
-        {
-            ctx.SetOutput([]);
-        });
+    public async Task<string?> OpenCreateProject()
+    {
+        return null;
+    }
 
-        OpenFolderPicker.RegisterHandler(ctx =>
-        {
-            ctx.SetOutput([]);
-        });
+    public async Task<IReadOnlyList<IStorageFile>> OpenFilePicker(FilePickerOpenOptions options)
+    {
+        return [];
+    }
 
-        OpenAddProfile.RegisterHandler(ctx =>
-        {
-            ctx.SetOutput(null);
-        });
+    public async Task<IReadOnlyList<IStorageFolder>> OpenFolderPicker(FolderPickerOpenOptions options)
+    {
+        return [];
+    }
 
-        CloseCurrentWindow.RegisterHandler(ctx =>
-        {
-            ctx.SetOutput(Unit.Default);
-        });
+    public async Task<string?> OpenAddProfile()
+    {
+        return null;
+    }
 
-        CloseCurrentWindowWithData.RegisterHandler(ctx =>
-        {
-            ctx.SetOutput(Unit.Default);
-        });
+    public void CloseCurrentWindow(object? data = null)
+    {
 
-        SwitchOutCurrentWindow.RegisterHandler(ctx =>
-        {
-            ctx.SetOutput(Unit.Default);
-        });
+    }
 
-        GenerateSdk.RegisterHandler(ctx =>
-        {
-            ctx.SetOutput(Unit.Default);
-        });
+    public void SwitchOutCurrentWindow(Window newWindow)
+    {
+
+    }
+
+    public async Task OpenGenerateSdk()
+    {
+
     }
 }

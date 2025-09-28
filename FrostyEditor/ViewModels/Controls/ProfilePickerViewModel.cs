@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using DynamicData;
 using FrostyEditor.Models;
 using FrostyEditor.Services;
+using FrostyEditor.Utilities;
 using FrostyEditor.ViewModels.Data;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -43,16 +44,12 @@ public partial class ProfilePickerViewModel : ViewModelBase, IActivatableViewMod
             .Bind(out m_profileInstances)
             .Subscribe();
 
-        this.WhenActivated((CompositeDisposable disposables) => { LoadProfilesCommand.Execute().Subscribe(); });
+        this.WhenActivated((CompositeDisposable disposables) => { Async.RunInBackground(m_profileService.RefreshProfiles).ConfigureAwait(false); });
     }
-
-    [ReactiveCommand]
-    private async Task LoadProfiles() => m_profileService.RefreshProfiles();
 
     [ReactiveCommand]
     private async Task OpenProfileManager()
     {
-        await DialogService.OpenProfileManager.Handle(Unit.Default);
-        await LoadProfilesCommand.Execute();
+        await DialogService.OpenProfileManager();
     }
 }

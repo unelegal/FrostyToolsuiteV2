@@ -16,13 +16,13 @@ public interface IProjectService
     /// <param name="createInFolder">The parent folder. A new subfolder will be created for the project</param>
     /// <param name="profileSlug">The profile instance slug to associate with the project</param>
     /// <returns>The project path if successful</returns>
-    public string? CreateProject(string modName, string modVersion, string createInFolder, string profileSlug);
+    public Task<string?> CreateProject(string modName, string modVersion, string createInFolder, string profileSlug);
 
     /// <summary>
     /// Open a project. Depending on the state of the current AppFlow this will either advance to the LoadingSplash,
     /// or open a popup, asking if the project should be opened in the current or a new window.
     /// </summary>
-    public ReactiveCommand<string, Unit> OpenProjectCommand { get; }
+    public Task OpenProject(string projectPath);
 
     public FrostyProject? FrostyProject { get; }
 

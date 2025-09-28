@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using Avalonia.Platform.Storage;
 using FrostyEditor.Services;
+using FrostyEditor.Utilities;
 using FrostyEditor.ViewModels.Controls;
 using Newtonsoft.Json.Converters;
 using ReactiveUI;
@@ -20,24 +23,25 @@ public partial class ProjectWindowViewModel : ViewModelBase
     public required RecentProjectsPaneViewModel RecentProjects { get; init; }
 
     [ReactiveCommand]
-    //private IObservable<Unit> CreateProject() => Observable.FromAsync(CreateProjectAsync).SubscribeOn(RxApp.TaskpoolScheduler);
     private async Task CreateProjectAsync()
     {
-        string? projectPath = await DialogService.OpenCreateProject.Handle(Unit.Default);
+        string? projectPath = await DialogService.OpenCreateProject();
         if (projectPath is null)
         {
             return;
         }
 
-        await ProjectService.OpenProjectCommand.Execute(projectPath);
-        RecentProjectsService.ProjectOpened(projectPath);
+        await Async.RunInBackground(async () =>
+        {
+            await ProjectService.OpenProject(projectPath);
+            await RecentProjectsService.ProjectOpened(projectPath);
+        });
     }
 
     [ReactiveCommand]
     private async Task OpenProject()
     {
-
-        var files = await DialogService.OpenFilePicker.Handle(new FilePickerOpenOptions
+        var files = await DialogService.OpenFilePicker(new FilePickerOpenOptions
         {
             Title = Assets.Lang.Resources.OpenProject,
             AllowMultiple = false,
@@ -54,14 +58,17 @@ public partial class ProjectWindowViewModel : ViewModelBase
             return;
         }
 
-        await ProjectService.OpenProjectCommand.Execute(chosenPath);
-        RecentProjectsService.ProjectOpened(chosenPath);
+        await Async.RunInBackground(async () =>
+        {
+            await ProjectService.OpenProject(chosenPath);
+            await RecentProjectsService.ProjectOpened(chosenPath);
+        });
     }
 
     [ReactiveCommand]
-    private async Task OpenProfileManager() => await DialogService.OpenProfileManager.Handle(Unit.Default);
+    private async Task OpenProfileManager() => await DialogService.OpenProfileManager();
 
     // TODO
     [ReactiveCommand]
-    private async Task OpenKeyManager() => await DialogService.OpenProfileManager.Handle(Unit.Default);
+    private async Task OpenKeyManager() => await DialogService.OpenProfileManager();
 }

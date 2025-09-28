@@ -5,6 +5,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using Autofac;
 using Avalonia.Controls;
+using FrostyEditor.Utilities;
 using FrostyEditor.Views.Windows;
 
 namespace FrostyEditor.Services.Implementation;
@@ -45,8 +46,11 @@ public class AppFlowService : IAppFlowService
             builder.RegisterType<LoadingSplashWindow>().As<Window>().InstancePerLifetimeScope();
         });
 
-        var newWindow = newScope.Resolve<Window>();
-        await m_currentScope!.Resolve<IDialogService>().SwitchOutCurrentWindow.Handle(newWindow);
+        await Async.RunOnUI(async () =>
+        {
+            var newWindow = newScope.Resolve<Window>();
+            m_currentScope!.Resolve<IDialogService>().SwitchOutCurrentWindow(newWindow);
+        });
 
         await m_currentScope!.DisposeAsync();
         m_currentScope = newScope;

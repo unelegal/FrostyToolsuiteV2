@@ -7,6 +7,7 @@ using DynamicData;
 using Frosty.Sdk;
 using Frosty.Sdk.Utils;
 using FrostyEditor.Models;
+using FrostyEditor.Utilities;
 using Newtonsoft.Json;
 
 namespace FrostyEditor.Services.Implementation;
@@ -16,7 +17,7 @@ public class ProfileService : IProfileService
     private static readonly string s_profileInstancesFile =
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "FrostyEditorV2", "ProfileInstances.json");
 
-    private readonly object m_profileListLock = new();
+    private readonly AsyncSemaphore m_fileSemaphore = new(1, 1);
     private readonly SourceCache<ProfileInstance, string> m_profileInstances = new(t => t.Slug);
 
     public ProfileService()
@@ -29,77 +30,43 @@ public class ProfileService : IProfileService
 
     public IObservable<IChangeSet<ProfileInstance, string>> ConnectProfiles()
     {
-        // Technically no lock needed, but there's a warning otherwise
-        lock (m_profileListLock)
-        {
-            return m_profileInstances.Connect();
-        }
+        return m_profileInstances.Connect();
     }
 
-    public void RefreshProfiles()
+    public async Task RefreshProfiles()
     {
-        LoadProfileInstancesFromDisk();
+        using var _ = await m_fileSemaphore.WaitAsync();
+        await LoadProfileInstancesFromDisk();
     }
 
-    private IEnumerable<ProfileInstance> LoadProfileInstancesFromDisk()
+    public async Task<bool> AddProfileInstance(ProfileInstance profile)
     {
-        if (!File.Exists(s_profileInstancesFile))
+        using var _ = await m_fileSemaphore.WaitAsync();
+
+        var profiles = (await LoadProfileInstancesFromDisk()).ToHashSet(new ProfileInstance.SlugComparer());
+
+        if (profiles.Add(profile))
         {
-            return [];
+            await SaveProfileInstancesToDisk(profiles);
+            return true;
         }
 
-        lock (m_profileListLock)
-        {
-            string content = File.ReadAllText(s_profileInstancesFile);
-            var loaded = JsonConvert.DeserializeObject<IList<ProfileInstance>>(content) ?? [];
-
-            m_profileInstances.EditDiff(loaded, EqualityComparer<ProfileInstance>.Default);
-
-            return loaded;
-        }
+        return false;
     }
 
-    private void SaveProfileInstancesToDisk(IEnumerable<ProfileInstance> profileInstances)
+    public async Task<bool> RemoveProfileInstance(string slug)
     {
-        Directory.CreateDirectory(Path.GetDirectoryName(s_profileInstancesFile)!);
+        using var _ = await m_fileSemaphore.WaitAsync();
 
-        lock (m_profileListLock)
+        var profiles = (await LoadProfileInstancesFromDisk()).ToHashSet(new ProfileInstance.SlugComparer());
+
+        if (profiles.RemoveWhere(p => p.Slug == slug) > 0)
         {
-            File.WriteAllText(s_profileInstancesFile, JsonConvert.SerializeObject(profileInstances));
-            m_profileInstances.EditDiff(profileInstances, EqualityComparer<ProfileInstance>.Default);
+            await SaveProfileInstancesToDisk(profiles);
+            return true;
         }
-    }
 
-    public bool AddProfileInstance(ProfileInstance profile)
-    {
-        lock (m_profileListLock)
-        {
-            var profiles = LoadProfileInstancesFromDisk().ToHashSet(new ProfileInstance.SlugComparer());
-
-            if (profiles.Add(profile))
-            {
-                SaveProfileInstancesToDisk(profiles);
-                return true;
-            }
-
-            return false;
-        }
-    }
-
-    public bool RemoveProfileInstance(string slug)
-    {
-        lock (m_profileListLock)
-        {
-            var profiles = LoadProfileInstancesFromDisk().ToHashSet(new ProfileInstance.SlugComparer());
-
-            if (profiles.RemoveWhere(p => p.Slug == slug) > 0)
-            {
-                SaveProfileInstancesToDisk(profiles);
-                return true;
-            }
-
-            return false;
-        }
+        return false;
     }
 
     public bool IsValidProfileKey(string profileKey)
@@ -125,9 +92,38 @@ public class ProfileService : IProfileService
             .FirstOrDefault(false);
     }
 
-    public ProfileInstance? GetProfileInstance(string slug)
+    public async Task<ProfileInstance?> GetProfileInstance(string slug)
     {
-        RefreshProfiles();
+        await RefreshProfiles();
         return m_profileInstances.Lookup(slug).HasValue ? m_profileInstances.Lookup(slug).Value : null;
+    }
+
+    /// <summary>
+    /// Only call with m_fileSemaphore acquired!
+    /// </summary>
+    private async Task<IEnumerable<ProfileInstance>> LoadProfileInstancesFromDisk()
+    {
+        if (!File.Exists(s_profileInstancesFile))
+        {
+            return [];
+        }
+
+        string content = await File.ReadAllTextAsync(s_profileInstancesFile);
+        var loaded = JsonConvert.DeserializeObject<IList<ProfileInstance>>(content) ?? [];
+
+        m_profileInstances.EditDiff(loaded, EqualityComparer<ProfileInstance>.Default);
+
+        return loaded;
+    }
+
+    /// <summary>
+    /// Only call with m_fileSemaphore acquired!
+    /// </summary>
+    private async Task SaveProfileInstancesToDisk(IEnumerable<ProfileInstance> profileInstances)
+    {
+        Directory.CreateDirectory(Path.GetDirectoryName(s_profileInstancesFile)!);
+
+        await File.WriteAllTextAsync(s_profileInstancesFile, JsonConvert.SerializeObject(profileInstances));
+        m_profileInstances.EditDiff(profileInstances, EqualityComparer<ProfileInstance>.Default);
     }
 }

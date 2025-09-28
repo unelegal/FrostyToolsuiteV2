@@ -18,12 +18,12 @@ public interface IRecentProjectsService
     /// <summary>
     /// Refresh the recently opened projects from disk
     /// </summary>
-    public void RefreshRecentProjects();
+    public Task RefreshRecentProjects();
 
     /// <summary>
     /// Notify the service that a project has been opened.
     /// Saves updated recent projects list to disk.
     /// </summary>
     /// <param name="path">Path of the project that has been opened</param>
-    public void ProjectOpened(string path);
+    public Task ProjectOpened(string path);
 }

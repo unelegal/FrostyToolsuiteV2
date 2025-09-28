@@ -1,10 +1,14 @@
 ﻿using System;
 using System.IO;
 using System.Net;
+using System.Reactive.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Frosty.ModSupport.Project;
+using FrostyEditor.Utilities;
 using Microsoft.VisualBasic;
 using Newtonsoft.Json;
+using ReactiveUI;
 using ReactiveUI.SourceGenerators;
 
 namespace FrostyEditor.Services.Implementation;
@@ -15,7 +19,9 @@ public partial class ProjectService : IProjectService
 
     private FrostyProject? m_currentProject;
 
-    public string? CreateProject(string modName, string modVersion, string createInFolder, string profileSlug)
+    private readonly AsyncSemaphore m_openProjectSem = new(1, 1);
+
+    public async Task<string?> CreateProject(string modName, string modVersion, string createInFolder, string profileSlug)
     {
         string folder = Path.Combine(createInFolder, modName);
         string fullPath = Path.Combine(folder, modName + ".json");
@@ -23,16 +29,18 @@ public partial class ProjectService : IProjectService
 
         FrostyProject project = new() { ModName = modName, ModVersion = modVersion, ProjectPath = fullPath, ModProfile = profileSlug };
 
-        File.WriteAllText(fullPath, JsonConvert.SerializeObject(project));
+        await File.WriteAllTextAsync(fullPath, JsonConvert.SerializeObject(project));
 
         return fullPath;
     }
 
     public FrostyProject? FrostyProject => m_currentProject;
 
-    [ReactiveCommand]
-    private async Task OpenProject(string projectPath)
+    // TODO: Move all this logic into AppFlowService
+    public async Task OpenProject(string projectPath)
     {
+        using var _ = await m_openProjectSem.WaitAsync();
+
         if (m_currentProject is null)
         {
             if (AppFlowService.GetCurrentFlowState() != IAppFlowService.FlowState.ProjectScreen)

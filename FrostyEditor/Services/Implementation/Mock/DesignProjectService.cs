@@ -12,15 +12,14 @@ public partial class DesignProjectService : IProjectService
 {
     private FrostyProject? m_currentProject;
 
-    public string? CreateProject(string modName, string modVersion, string createInFolder, string profileSlug)
+    public async Task<string?> CreateProject(string modName, string modVersion, string createInFolder, string profileSlug)
     {
         return null;
     }
 
     public FrostyProject? FrostyProject => m_currentProject;
 
-    [ReactiveCommand]
-    private async Task OpenProject(string projectPath)
+    public async Task OpenProject(string projectPath)
     {
 
     }

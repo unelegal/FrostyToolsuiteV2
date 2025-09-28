@@ -31,18 +31,18 @@ public class DesignProfileService : IProfileService
         return m_profileInstances.Connect();
     }
 
-    public void RefreshProfiles()
+    public async Task RefreshProfiles()
     {
 
     }
 
-    public bool AddProfileInstance(ProfileInstance profile)
+    public async Task<bool> AddProfileInstance(ProfileInstance profile)
     {
         m_profileInstances.AddOrUpdate(profile);
         return true;
     }
 
-    public bool RemoveProfileInstance(string slug)
+    public async Task<bool> RemoveProfileInstance(string slug)
     {
         m_profileInstances.RemoveKey(slug);
         return true;
@@ -68,7 +68,7 @@ public class DesignProfileService : IProfileService
         return true;
     }
 
-    public ProfileInstance? GetProfileInstance(string slug)
+    public async Task<ProfileInstance?> GetProfileInstance(string slug)
     {
         return m_profileInstances.Lookup(slug).HasValue ? m_profileInstances.Lookup(slug).Value : null;
     }

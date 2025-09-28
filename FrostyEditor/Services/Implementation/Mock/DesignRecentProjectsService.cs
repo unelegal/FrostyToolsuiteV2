@@ -28,12 +28,12 @@ public class DesignRecentProjectsService : IRecentProjectsService
 
     public IObservable<IChangeSet<RecentProjectEntry, string>> ConnectRecentProjects() => m_recentProjects.Connect();
 
-    public void RefreshRecentProjects()
+    public async Task RefreshRecentProjects()
     {
 
     }
 
-    public void ProjectOpened(string path)
+    public async Task ProjectOpened(string path)
     {
         m_recentProjects.AddOrUpdate(new RecentProjectEntry { FullPath = path, LastOpened = DateTime.Now });
     }

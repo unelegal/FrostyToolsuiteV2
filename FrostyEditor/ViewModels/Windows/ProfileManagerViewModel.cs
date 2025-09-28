@@ -10,6 +10,7 @@ using Avalonia.Controls.Selection;
 using DynamicData;
 using FrostyEditor.Models;
 using FrostyEditor.Services;
+using FrostyEditor.Utilities;
 using FrostyEditor.ViewModels.Data;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -48,19 +49,16 @@ public partial class ProfileManagerViewModel : ViewModelBase, IActivatableViewMo
             .Bind(out m_profileInstances)
             .Subscribe();
 
-        this.WhenActivated((CompositeDisposable disposables) => { LoadProfilesCommand.Execute().Subscribe(); });
-    }
-
-    [ReactiveCommand]
-    private async Task LoadProfiles()
-    {
-        m_profileService.RefreshProfiles();
+        this.WhenActivated((CompositeDisposable disposables) =>
+        {
+            Async.RunInBackground(m_profileService.RefreshProfiles).ConfigureAwait(false);
+        });
     }
 
     [ReactiveCommand]
     private async Task AddProfile()
     {
-        string? newProfileSlug = await DialogService.OpenAddProfile.Handle(Unit.Default);
+        string? newProfileSlug = await DialogService.OpenAddProfile();
         if (newProfileSlug is null)
         {
             return;
@@ -78,6 +76,9 @@ public partial class ProfileManagerViewModel : ViewModelBase, IActivatableViewMo
         }
 
         // TODO: Are you sure popup
-        m_profileService.RemoveProfileInstance(selectedProfile.Slug);
+        await Async.RunInBackground(async () =>
+        {
+            await m_profileService.RemoveProfileInstance(selectedProfile.Slug);
+        });
     }
 }

@@ -18,85 +18,9 @@ public class DialogService : IDialogService
     private readonly Lazy<Window> m_lazyOwningWindow;
     private Window m_owningWindow => m_lazyOwningWindow.Value;
 
-    public Interaction<Unit, Unit> OpenProfileManager { get; } = new();
-    public Interaction<Unit, string?> OpenCreateProject { get; } = new();
-    public Interaction<FilePickerOpenOptions, IReadOnlyList<IStorageFile>> OpenFilePicker { get; } = new();
-    public Interaction<FolderPickerOpenOptions, IReadOnlyList<IStorageFolder>> OpenFolderPicker { get; } = new();
-    public Interaction<Unit, string?> OpenAddProfile { get; } = new();
-    public Interaction<Unit, Unit> CloseCurrentWindow { get; } = new();
-    public Interaction<object?, Unit> CloseCurrentWindowWithData { get; } = new();
-
-    public Interaction<Window, Unit> SwitchOutCurrentWindow { get; } = new();
-    public Interaction<Unit, Unit> GenerateSdk { get; } = new();
-
     public DialogService(Lazy<Window> owningWindow)
     {
         m_lazyOwningWindow = owningWindow;
-
-        OpenProfileManager.RegisterHandler(async ctx =>
-        {
-            await ShowDialogAsync<ProfileManagerWindow>();
-            ctx.SetOutput(Unit.Default);
-        });
-
-        OpenCreateProject.RegisterHandler(async ctx =>
-        {
-            string? path = await ShowDialogAsync<NewProjectWindow, string?>();
-            ctx.SetOutput(path);
-        });
-
-        OpenFilePicker.RegisterHandler(async ctx =>
-        {
-            var files = await m_owningWindow.StorageProvider.OpenFilePickerAsync(ctx.Input);
-
-            ctx.SetOutput(files);
-        });
-
-        OpenFolderPicker.RegisterHandler(async ctx =>
-        {
-            var folders = await m_owningWindow.StorageProvider.OpenFolderPickerAsync(ctx.Input);
-
-            // var folders = await GetTopLevel(this)!.StorageProvider.OpenFolderPickerAsync(new FolderPickerOpenOptions
-            //{
-            //    Title = "Choose a game",
-            //    AllowMultiple = false
-            //});
-//
-            //interaction.SetOutput(folders.Count >= 1 ? folders[0].TryGetLocalPath() : null);
-
-            ctx.SetOutput(folders);
-        });
-
-        OpenAddProfile.RegisterHandler(async interaction =>
-        {
-            string? slug = await ShowDialogAsync<NewProfileWindow, string?>();
-            interaction.SetOutput(slug);
-        });
-
-        CloseCurrentWindow.RegisterHandler(interaction =>
-        {
-            m_owningWindow.Close();
-            interaction.SetOutput(Unit.Default);
-        });
-
-        CloseCurrentWindowWithData.RegisterHandler(interaction =>
-        {
-            m_owningWindow.Close(interaction.Input);
-            interaction.SetOutput(Unit.Default);
-        });
-
-        SwitchOutCurrentWindow.RegisterHandler(ctx =>
-        {
-            ctx.Input.Show();
-            m_owningWindow.Close();
-            ctx.SetOutput(Unit.Default);
-        });
-
-        GenerateSdk.RegisterHandler(ctx =>
-        {
-            // TODO
-            ctx.SetOutput(Unit.Default);
-        });
     }
 
     private async Task<TRet> ShowDialogAsync<TWindow, TRet>() where TWindow : Window
@@ -117,5 +41,46 @@ public class DialogService : IDialogService
         });
         var dialog = scope.Resolve<Window>();
         await dialog.ShowDialog(m_owningWindow);
+    }
+
+    public async Task OpenProfileManager()
+    {
+        await ShowDialogAsync<ProfileManagerWindow>();
+    }
+
+    public async Task<string?> OpenCreateProject()
+    {
+        return await ShowDialogAsync<NewProjectWindow, string?>();
+    }
+
+    public async Task<IReadOnlyList<IStorageFile>> OpenFilePicker(FilePickerOpenOptions options)
+    {
+        return await m_owningWindow.StorageProvider.OpenFilePickerAsync(options);
+    }
+
+    public async Task<IReadOnlyList<IStorageFolder>> OpenFolderPicker(FolderPickerOpenOptions options)
+    {
+        return await m_owningWindow.StorageProvider.OpenFolderPickerAsync(options);
+    }
+
+    public async Task<string?> OpenAddProfile()
+    {
+        return await ShowDialogAsync<NewProfileWindow, string?>();
+    }
+
+    public void CloseCurrentWindow(object? data = null)
+    {
+        m_owningWindow.Close(data);
+    }
+
+    public void SwitchOutCurrentWindow(Window newWindow)
+    {
+        newWindow.Show();
+        m_owningWindow.Close();
+    }
+
+    public async Task OpenGenerateSdk()
+    {
+        throw new NotImplementedException();
     }
 }

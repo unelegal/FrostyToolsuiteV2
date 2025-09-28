@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
 using FrostyEditor.Models;
 using FrostyEditor.Services;
+using FrostyEditor.Utilities;
 using FrostyEditor.ViewModels.Data;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -59,23 +60,23 @@ public partial class NewProfileWindowViewModel : ViewModelBase
 
         m_requiresCasKeyHelper = this
             .WhenAnyValue(x => x.Profile.ProfileKey, x => x.IsValidProfileKey)
-            .Where(tuple => tuple.Item2)
-            .Select(tuple => tuple.Item1)
-            .Select(profileKey => m_profileService.RequiresCasKey(profileKey))
+            .Select(t => (ProfileKey: t.Item1, IsValid: t.Item2))
+            .Where(t => t.IsValid)
+            .Select(t => m_profileService.RequiresCasKey(t.ProfileKey))
             .ToProperty(this, nameof(RequiresCasKey), scheduler: RxApp.MainThreadScheduler);
 
         m_requiresBundleKeyHelper = this
             .WhenAnyValue(x => x.Profile.ProfileKey, x => x.IsValidProfileKey)
-            .Where(tuple => tuple.Item2)
-            .Select(tuple => tuple.Item1)
-            .Select(profileKey => m_profileService.RequiresBundleKey(profileKey))
+            .Select(t => (ProfileKey: t.Item1, IsValid: t.Item2))
+            .Where(t => t.IsValid)
+            .Select(t => m_profileService.RequiresBundleKey(t.ProfileKey))
             .ToProperty(this, nameof(RequiresBundleKey), scheduler: RxApp.MainThreadScheduler);
 
         m_requiresInitFsKeyHelper = this
             .WhenAnyValue(x => x.Profile.ProfileKey, x => x.IsValidProfileKey)
-            .Where(tuple => tuple.Item2)
-            .Select(tuple => tuple.Item1)
-            .Select(profileKey => m_profileService.RequiresInitFsKey(profileKey))
+            .Select(t => (ProfileKey: t.Item1, IsValid: t.Item2))
+            .Where(t => t.IsValid)
+            .Select(t => m_profileService.RequiresInitFsKey(t.ProfileKey))
             .ToProperty(this, nameof(RequiresInitFsKey), scheduler: RxApp.MainThreadScheduler);
 
         m_requiresAnyKeyHelper = this
@@ -126,18 +127,18 @@ public partial class NewProfileWindowViewModel : ViewModelBase
     [ReactiveCommand(CanExecute = nameof(m_canCreateProfile))]
     private async Task Create(string slug)
     {
-        m_profileService.AddProfileInstance(Profile.ToModel());
+        await Async.RunInBackground(async () => await m_profileService.AddProfileInstance(Profile.ToModel()));
 
-        await DialogService.CloseCurrentWindowWithData.Handle(slug);
+        DialogService.CloseCurrentWindow(slug);
     }
 
     [ReactiveCommand]
-    private async Task Cancel() => await DialogService.CloseCurrentWindow.Handle(Unit.Default);
+    private void Cancel() => DialogService.CloseCurrentWindow();
 
     [ReactiveCommand]
     private async Task<string?> PickFile()
     {
-        var files = await DialogService.OpenFilePicker.Handle(new FilePickerOpenOptions
+        var files = await DialogService.OpenFilePicker(new FilePickerOpenOptions
         {
             Title = "Choose a game",
             AllowMultiple = false,

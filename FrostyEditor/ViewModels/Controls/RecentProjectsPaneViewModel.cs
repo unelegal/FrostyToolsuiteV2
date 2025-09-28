@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using DynamicData;
 using DynamicData.Binding;
 using FrostyEditor.Services;
+using FrostyEditor.Utilities;
 using FrostyEditor.ViewModels.Data;
 using ReactiveUI;
 using ReactiveUI.SourceGenerators;
@@ -40,19 +41,16 @@ public partial class RecentProjectsPaneViewModel : ViewModelBase, IActivatableVi
 
         this.WhenActivated((CompositeDisposable disposables) =>
         {
-            RefreshRecentProjectsCommand.Execute().Subscribe();
+            Async.RunInBackground(m_recentProjectsService.RefreshRecentProjects).ConfigureAwait(false);
         });
-    }
-
-    [ReactiveCommand]
-    private async Task RefreshRecentProjects()
-    {
-        m_recentProjectsService.RefreshRecentProjects();
     }
 
     [ReactiveCommand]
     private async Task OpenProject(string fullPath)
     {
-        await ProjectService.OpenProjectCommand.Execute(fullPath);
+        await Async.RunInBackground(async () =>
+        {
+            await ProjectService.OpenProject(fullPath);
+        });
     }
 }

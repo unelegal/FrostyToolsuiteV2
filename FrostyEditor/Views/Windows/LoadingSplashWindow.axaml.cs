@@ -13,12 +13,7 @@ public partial class LoadingSplashWindow : ReactiveWindow<LoadingSplashViewModel
 {
     public LoadingSplashWindow()
     {
-        this.WhenActivated(disposables =>
-        {
-            this.WhenAnyValue(x => x.ViewModel!.LoadCommand)
-                .SelectMany(async x => await x.Execute())
-                .Subscribe();
-        });
+        this.WhenActivated(disposables => { });
         InitializeComponent();
     }
 
