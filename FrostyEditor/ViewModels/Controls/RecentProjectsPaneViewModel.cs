@@ -20,6 +20,8 @@ public partial class RecentProjectsPaneViewModel : ViewModelBase, IActivatableVi
 {
     private readonly IRecentProjectsService m_recentProjectsService;
 
+    public required IProjectService ProjectService { private get; init; }
+
     public ViewModelActivator Activator { get; } = new();
 
     private readonly ReadOnlyObservableCollection<RecentProjectViewModel> m_recentProjects;
@@ -46,5 +48,11 @@ public partial class RecentProjectsPaneViewModel : ViewModelBase, IActivatableVi
     private async Task RefreshRecentProjects()
     {
         m_recentProjectsService.RefreshRecentProjects();
+    }
+
+    [ReactiveCommand]
+    private async Task OpenProject(string fullPath)
+    {
+        await ProjectService.OpenProjectCommand.Execute(fullPath);
     }
 }

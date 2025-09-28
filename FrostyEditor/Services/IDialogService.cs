@@ -24,4 +24,7 @@ public interface IDialogService
 
     public Interaction<Unit, Unit> CloseCurrentWindow { get; }
     public Interaction<object?, Unit> CloseCurrentWindowWithData { get; }
+
+    public Interaction<Window, Unit> SwitchOutCurrentWindow { get; }
+    public Interaction<Unit, Unit> GenerateSdk { get; }
 }

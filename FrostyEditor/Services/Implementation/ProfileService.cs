@@ -124,4 +124,10 @@ public class ProfileService : IProfileService
         return ProfilesLibrary.Profiles.Where(profile => profile.Name.Equals(profileKey, StringComparison.OrdinalIgnoreCase)).Select(profile => profile.RequiresInitFsKey)
             .FirstOrDefault(false);
     }
+
+    public ProfileInstance? GetProfileInstance(string slug)
+    {
+        RefreshProfiles();
+        return m_profileInstances.Lookup(slug).HasValue ? m_profileInstances.Lookup(slug).Value : null;
+    }
 }

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace Frosty.ModSupport.Project;
@@ -23,6 +24,11 @@ public class FrostyProject : FrostyProjectBase
     // Index of all the files in the project
     // Changes maybe stored in their own files in subfolders?
 
+    public FrostyProject()
+    {
+        FormatVersion = 1;
+    }
+
     public static FrostyProject? Load(string path)
     {
         if (!File.Exists(path))
@@ -31,6 +37,27 @@ public class FrostyProject : FrostyProjectBase
         }
 
         string jsonString = File.ReadAllText(path);
+        FrostyProjectBase? @base = JsonConvert.DeserializeObject<FrostyProjectBase>(jsonString);
+        if (@base is null)
+        {
+            return null;
+        }
+
+        return @base.FormatVersion switch
+        {
+            1 => JsonConvert.DeserializeObject<FrostyProject>(jsonString),
+            _ => null
+        };
+    }
+
+    public static async Task<FrostyProject?> LoadAsync(string path)
+    {
+        if (!File.Exists(path))
+        {
+            return null;
+        }
+
+        string jsonString = await File.ReadAllTextAsync(path);
         FrostyProjectBase? @base = JsonConvert.DeserializeObject<FrostyProjectBase>(jsonString);
         if (@base is null)
         {

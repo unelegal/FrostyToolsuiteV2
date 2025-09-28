@@ -1,4 +1,9 @@
-﻿namespace FrostyEditor.Services;
+﻿using System.Reactive;
+using System.Threading.Tasks;
+using Frosty.ModSupport.Project;
+using ReactiveUI;
+
+namespace FrostyEditor.Services;
 
 public interface IProjectService
 {
@@ -14,9 +19,11 @@ public interface IProjectService
     public string? CreateProject(string modName, string modVersion, string createInFolder, string profileSlug);
 
     /// <summary>
-    /// Open a project in a new window. This should only be called from a View!
+    /// Open a project. Depending on the state of the current AppFlow this will either advance to the LoadingSplash,
+    /// or open a popup, asking if the project should be opened in the current or a new window.
     /// </summary>
-    /// <param name="projectPath">The path to the project</param>
-    public void OpenProject(string projectPath);
+    public ReactiveCommand<string, Unit> OpenProjectCommand { get; }
+
+    public FrostyProject? FrostyProject { get; }
 
 }

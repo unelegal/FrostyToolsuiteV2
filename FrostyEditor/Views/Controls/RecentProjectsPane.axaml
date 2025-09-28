@@ -10,18 +10,22 @@
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="FrostyEditor.Views.Controls.RecentProjectsPane"
              x:DataType="vmControls:RecentProjectsPaneViewModel">
-  
+
   <ScrollViewer>
     <ItemsControl ItemsSource="{Binding RecentProjects}">
       <ItemsControl.ItemTemplate>
         <DataTemplate>
-          <StackPanel Orientation="Vertical" Margin="10">
-            <TextBlock Text="{Binding Name}" FontSize="16" Margin="10 5"/>
-            <TextBlock Text="{Binding FullPath}" FontSize="13" FontWeight="Thin" Margin="10 5"/>
-          </StackPanel>
+          <Button HorizontalAlignment="Stretch"
+                  Command="{Binding $parent[UserControl].((vmControls:RecentProjectsPaneViewModel)DataContext).OpenProjectCommand}"
+                  CommandParameter="{Binding FullPath}">
+            <StackPanel Orientation="Vertical" Margin="10">
+              <TextBlock Text="{Binding Name}" FontSize="16" Margin="10 5" />
+              <TextBlock Text="{Binding FullPath}" FontSize="13" FontWeight="Thin" Margin="10 5" />
+            </StackPanel>
+          </Button>
         </DataTemplate>
       </ItemsControl.ItemTemplate>
     </ItemsControl>
   </ScrollViewer>
-  
+
 </UserControl>

@@ -67,4 +67,9 @@ public class DesignProfileService : IProfileService
     {
         return true;
     }
+
+    public ProfileInstance? GetProfileInstance(string slug)
+    {
+        return m_profileInstances.Lookup(slug).HasValue ? m_profileInstances.Lookup(slug).Value : null;
+    }
 }

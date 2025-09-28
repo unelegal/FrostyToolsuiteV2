@@ -19,12 +19,6 @@ public partial class ProjectWindow : ReactiveWindow<ProjectWindowViewModel>
     {
         this.WhenActivated(disposables =>
         {
-            this.ViewModel!.InitProjectInteraction.RegisterHandler(interaction =>
-            {
-                Close();
-
-                interaction.SetOutput(Unit.Default);
-            }).DisposeWith(disposables);
         });
         InitializeComponent();
     }

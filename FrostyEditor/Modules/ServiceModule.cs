@@ -16,15 +16,18 @@ public class ServiceModule : Module
             builder.RegisterType<DesignProfileService>().As<IProfileService>().SingleInstance();
             builder.RegisterType<DesignProjectService>().As<IProjectService>().SingleInstance();
             builder.RegisterType<DesignDialogService>().As<IDialogService>().SingleInstance();
+            builder.RegisterType<DesignAppFlowService>().As<IAppFlowService>().SingleInstance();
         }
         else
         {
+            builder.RegisterType<LifetimeManager>().As<ILifetimeManager>().SingleInstance();
             builder.RegisterType<RecentProjectsService>().As<IRecentProjectsService>().SingleInstance();
             builder.RegisterType<ProfileService>().As<IProfileService>().SingleInstance();
-            builder.RegisterType<ProjectService>().As<IProjectService>().SingleInstance();
             builder.RegisterType<DialogService>().As<IDialogService>().InstancePerLifetimeScope();
+            builder.RegisterType<ProjectService>().As<IProjectService>().InstancePerMatchingLifetimeScope(IAppFlowService.AppFlowTag);
+            builder.RegisterType<AppFlowService>().As<IAppFlowService>().InstancePerMatchingLifetimeScope(IAppFlowService.AppFlowTag);
         }
 
-        builder.RegisterType<ViewLocator>().AsSelf().SingleInstance();
+        builder.RegisterType<IAppFlowService.FlowId>().InstancePerMatchingLifetimeScope(IAppFlowService.AppFlowTag);
     }
 }

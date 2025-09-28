@@ -5,30 +5,37 @@ using System.Linq;
 using Autofac;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
+using FrostyEditor.Services;
 using FrostyEditor.Utilities;
 using FrostyEditor.ViewModels.Windows;
 using ProjectWindow = FrostyEditor.Views.Windows.ProjectWindow;
 
 namespace FrostyEditor;
 
-public partial class App : Application
+public class App : Application
 {
-    private readonly ILifetimeScope m_scope;
-    public static ILifetimeScope? DesignContainer;
+    private readonly ILifetimeManager? m_lifetimeManager;
+
+    /// <summary>
+    /// Only exists in DesignMode. Do not use!
+    /// </summary>
+    public static IContainer? DesignContainer;
 
     public App(IContainer container)
     {
-        m_scope = container.BeginLifetimeScope();
-
         if (Design.IsDesignMode)
         {
-            DesignContainer = m_scope;
+            DesignContainer = container;
+        }
+        else
+        {
+            m_lifetimeManager = container.Resolve<ILifetimeManager>();
+            m_lifetimeManager.ServiceContainer = container;
         }
     }
 
     public override void Initialize()
     {
-        DataTemplates.Add(m_scope.Resolve<ViewLocator>());
         AvaloniaXamlLoader.Load(this);
     }
 
@@ -36,31 +43,10 @@ public partial class App : Application
     {
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            // Avoid duplicate validations from both Avalonia and the CommunityToolkit.
-            // More info: https://docs.avaloniaui.net/docs/guides/development-guides/data-validation#manage-validationplugins
-            DisableAvaloniaDataAnnotationValidation();
-
-            // TODO: Global window lifetime manager that disposes scopes
-            var scope = m_scope.BeginLifetimeScope(builder =>
-            {
-                builder.RegisterType<ProjectWindow>().As<Window>().InstancePerLifetimeScope();
-            });
-            desktop.MainWindow = scope.Resolve<Window>();
+            m_lifetimeManager!.CreateAppFlow();
+            desktop.ShutdownMode = ShutdownMode.OnLastWindowClose;
         }
 
         base.OnFrameworkInitializationCompleted();
-    }
-
-    private void DisableAvaloniaDataAnnotationValidation()
-    {
-        // Get an array of plugins to remove
-        var dataValidationPluginsToRemove =
-            BindingPlugins.DataValidators.OfType<DataAnnotationsValidationPlugin>().ToArray();
-
-        // remove each entry found
-        foreach (var plugin in dataValidationPluginsToRemove)
-        {
-            BindingPlugins.DataValidators.Remove(plugin);
-        }
     }
 }

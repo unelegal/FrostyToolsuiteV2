@@ -16,6 +16,6 @@ public class DesignLocator(Type type) : MarkupExtension
             throw new InvalidOperationException("Design locator is only available in Design Mode.");
         }
 
-        return App.DesignContainer!.Resolve(type);
+        return App.DesignContainer!.BeginLifetimeScope().Resolve(type);
     }
 }

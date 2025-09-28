@@ -26,6 +26,9 @@ public class DialogService : IDialogService
     public Interaction<Unit, Unit> CloseCurrentWindow { get; } = new();
     public Interaction<object?, Unit> CloseCurrentWindowWithData { get; } = new();
 
+    public Interaction<Window, Unit> SwitchOutCurrentWindow { get; } = new();
+    public Interaction<Unit, Unit> GenerateSdk { get; } = new();
+
     public DialogService(Lazy<Window> owningWindow)
     {
         m_lazyOwningWindow = owningWindow;
@@ -80,6 +83,19 @@ public class DialogService : IDialogService
         {
             m_owningWindow.Close(interaction.Input);
             interaction.SetOutput(Unit.Default);
+        });
+
+        SwitchOutCurrentWindow.RegisterHandler(ctx =>
+        {
+            ctx.Input.Show();
+            m_owningWindow.Close();
+            ctx.SetOutput(Unit.Default);
+        });
+
+        GenerateSdk.RegisterHandler(ctx =>
+        {
+            // TODO
+            ctx.SetOutput(Unit.Default);
         });
     }
 

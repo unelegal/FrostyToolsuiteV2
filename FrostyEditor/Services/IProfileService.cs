@@ -62,4 +62,6 @@ public interface IProfileService
     /// <param name="profileKey">The profile key to check</param>
     /// <returns>True if a InitFS key is required</returns>
     public bool RequiresInitFsKey(string profileKey);
+
+    public ProfileInstance? GetProfileInstance(string slug);
 }

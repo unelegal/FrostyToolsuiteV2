@@ -13,6 +13,7 @@
       <ResourceDictionary>
         <ResourceDictionary.MergedDictionaries>
           <ResourceInclude Source="avares://AvaloniaSearchableComboBox/Themes/SearchableComboBox.axaml" />
+          <ResourceInclude Source="avares://LoadingIndicators.Avalonia/LoadingIndicators.axaml" />
           <MergeResourceInclude Source="Assets/Icons.axaml" />
           <MergeResourceInclude Source="Converters/Converters.axaml" />
           <MergeResourceInclude Source="Assets/Themes/ProfilePickerComboBox.axaml" />

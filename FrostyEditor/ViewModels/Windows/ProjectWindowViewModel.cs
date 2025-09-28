@@ -1,4 +1,5 @@
-﻿using System.Reactive;
+﻿using System;
+using System.Reactive;
 using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Avalonia.Platform.Storage;
@@ -13,15 +14,14 @@ namespace FrostyEditor.ViewModels.Windows;
 public partial class ProjectWindowViewModel : ViewModelBase
 {
     public required IRecentProjectsService RecentProjectsService { private get; init; }
-
+    public required IProjectService ProjectService { private get; init; }
     public required IDialogService DialogService { private get; init; }
 
     public required RecentProjectsPaneViewModel RecentProjects { get; init; }
 
-    public Interaction<string, Unit> InitProjectInteraction { get; } = new();
-
     [ReactiveCommand]
-    private async Task CreateProject()
+    //private IObservable<Unit> CreateProject() => Observable.FromAsync(CreateProjectAsync).SubscribeOn(RxApp.TaskpoolScheduler);
+    private async Task CreateProjectAsync()
     {
         string? projectPath = await DialogService.OpenCreateProject.Handle(Unit.Default);
         if (projectPath is null)
@@ -29,13 +29,14 @@ public partial class ProjectWindowViewModel : ViewModelBase
             return;
         }
 
-        await InitProjectInteraction.Handle(projectPath);
+        await ProjectService.OpenProjectCommand.Execute(projectPath);
         RecentProjectsService.ProjectOpened(projectPath);
     }
 
     [ReactiveCommand]
     private async Task OpenProject()
     {
+
         var files = await DialogService.OpenFilePicker.Handle(new FilePickerOpenOptions
         {
             Title = Assets.Lang.Resources.OpenProject,
@@ -53,7 +54,7 @@ public partial class ProjectWindowViewModel : ViewModelBase
             return;
         }
 
-        await InitProjectInteraction.Handle(chosenPath);
+        await ProjectService.OpenProjectCommand.Execute(chosenPath);
         RecentProjectsService.ProjectOpened(chosenPath);
     }
 

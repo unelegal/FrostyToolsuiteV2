@@ -1,0 +1,41 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vControls="using:FrostyEditor.Views.Controls"
+        xmlns:vmControls="using:FrostyEditor.ViewModels.Controls"
+        xmlns:vmWindows="using:FrostyEditor.ViewModels.Windows"
+        xmlns:lang="using:FrostyEditor.Assets.Lang"
+        xmlns:markup="using:FrostyEditor.Utilities.MarkupExtensions"
+        xmlns:li="using:LoadingIndicators.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="400" d:DesignHeight="400"
+        x:Class="FrostyEditor.Views.Windows.LoadingSplashWindow"
+        x:DataType="vmWindows:LoadingSplashViewModel"
+        Design.DataContext="{markup:DesignLocator {x:Type vmWindows:LoadingSplashViewModel}}"
+        Title="LoadingSplash"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        Width="400" Height="400"
+        CanResize="False"
+        SystemDecorations="BorderOnly"
+        WindowStartupLocation="CenterScreen">
+  
+  <Panel>
+    <ExperimentalAcrylicBorder IsHitTestVisible="False">
+      <ExperimentalAcrylicBorder.Material>
+        <ExperimentalAcrylicMaterial
+          BackgroundSource="Digger"
+          TintColor="{DynamicResource SystemChromeLowColor}"
+          TintOpacity="1"
+          MaterialOpacity="0.65" />
+      </ExperimentalAcrylicBorder.Material>
+    </ExperimentalAcrylicBorder>
+    
+    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+      <li:LoadingIndicator IsActive="True" Mode="Arcs" Width="100"/>
+    
+      <TextBlock Text="Loading" FontSize="21" HorizontalAlignment="Center"></TextBlock>
+    </StackPanel>
+  </Panel>
+  
+</Window>

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reactive;
+using Avalonia.Controls;
 using Avalonia.Platform.Storage;
 using FrostyEditor.Views.Windows;
 using ReactiveUI;
@@ -15,6 +16,8 @@ public class DesignDialogService : IDialogService
     public Interaction<Unit, string?> OpenAddProfile { get; } = new();
     public Interaction<Unit, Unit> CloseCurrentWindow { get; } = new();
     public Interaction<object?, Unit> CloseCurrentWindowWithData { get; } = new();
+    public Interaction<Window, Unit> SwitchOutCurrentWindow { get; } = new();
+    public Interaction<Unit, Unit> GenerateSdk { get; } = new();
 
     public DesignDialogService()
     {
@@ -49,6 +52,16 @@ public class DesignDialogService : IDialogService
         });
 
         CloseCurrentWindowWithData.RegisterHandler(ctx =>
+        {
+            ctx.SetOutput(Unit.Default);
+        });
+
+        SwitchOutCurrentWindow.RegisterHandler(ctx =>
+        {
+            ctx.SetOutput(Unit.Default);
+        });
+
+        GenerateSdk.RegisterHandler(ctx =>
         {
             ctx.SetOutput(Unit.Default);
         });
