@@ -3,6 +3,7 @@ using Avalonia.Controls;
 using FrostyEditor.Services;
 using FrostyEditor.Services.Implementation;
 using FrostyEditor.Services.Implementation.Mock;
+using FrostyEditor.Utilities;
 
 namespace FrostyEditor.Modules;
 
@@ -17,6 +18,7 @@ public class ServiceModule : Module
             builder.RegisterType<DesignProjectService>().As<IProjectService>().SingleInstance();
             builder.RegisterType<DesignDialogService>().As<IDialogService>().SingleInstance();
             builder.RegisterType<DesignAppFlowService>().As<IAppFlowService>().SingleInstance();
+            builder.RegisterType<DesignDockingService>().As<IDockingService>().SingleInstance();
         }
         else
         {
@@ -26,8 +28,11 @@ public class ServiceModule : Module
             builder.RegisterType<DialogService>().As<IDialogService>().InstancePerLifetimeScope();
             builder.RegisterType<ProjectService>().As<IProjectService>().InstancePerMatchingLifetimeScope(IAppFlowService.AppFlowTag);
             builder.RegisterType<AppFlowService>().As<IAppFlowService>().InstancePerMatchingLifetimeScope(IAppFlowService.AppFlowTag);
+            builder.RegisterType<DockingService>().As<IDockingService>().InstancePerMatchingLifetimeScope(IAppFlowService.AppFlowTag);
+            builder.RegisterType<DockFactory>().InstancePerMatchingLifetimeScope(IAppFlowService.AppFlowTag);
         }
 
         builder.RegisterType<IAppFlowService.FlowId>().InstancePerMatchingLifetimeScope(IAppFlowService.AppFlowTag);
+        builder.RegisterType<ViewLocator>();
     }
 }

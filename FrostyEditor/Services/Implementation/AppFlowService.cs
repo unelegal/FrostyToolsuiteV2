@@ -55,4 +55,23 @@ public class AppFlowService : IAppFlowService
         await m_currentScope!.DisposeAsync();
         m_currentScope = newScope;
     }
+
+    public async Task SwitchToEditor()
+    {
+        m_currentFlowState = IAppFlowService.FlowState.Editor;
+
+        var newScope = ParentScope.BeginLifetimeScope(builder =>
+        {
+            builder.RegisterType<EditorWindow>().As<Window>().InstancePerLifetimeScope();
+        });
+
+        await Async.RunOnUI(async () =>
+        {
+            var newWindow = newScope.Resolve<Window>();
+            m_currentScope!.Resolve<IDialogService>().SwitchOutCurrentWindow(newWindow);
+        });
+
+        await m_currentScope!.DisposeAsync();
+        m_currentScope = newScope;
+    }
 }

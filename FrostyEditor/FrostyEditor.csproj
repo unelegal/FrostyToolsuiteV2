@@ -25,6 +25,11 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="AvaloniaSearchableComboBox" Version="1.0.0" />
+        <PackageReference Include="Dock.Avalonia" Version="11.3.6.1" />
+        <PackageReference Include="Dock.Avalonia.Themes.Fluent" Version="11.3.6.1" />
+        <PackageReference Include="Dock.Model.Avalonia" Version="11.3.6.1" />
+        <PackageReference Include="Dock.Model.ReactiveUI" Version="11.3.6.1" />
+        <PackageReference Include="Dock.Serializer.SystemTextJson" Version="11.3.6.1" />
         <PackageReference Include="LoadingIndicators.Avalonia" Version="11.0.11.1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.8" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />

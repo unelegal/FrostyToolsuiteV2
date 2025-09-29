@@ -17,17 +17,15 @@ public class App : Application
     private readonly ILifetimeManager? m_lifetimeManager;
 
     /// <summary>
-    /// Only exists in DesignMode. Do not use!
+    /// Do not use this!
     /// </summary>
     public static IContainer? DesignContainer;
 
     public App(IContainer container)
     {
-        if (Design.IsDesignMode)
-        {
-            DesignContainer = container;
-        }
-        else
+        DesignContainer = container;
+
+        if (!Design.IsDesignMode)
         {
             m_lifetimeManager = container.Resolve<ILifetimeManager>();
             m_lifetimeManager.ServiceContainer = container;
@@ -36,6 +34,7 @@ public class App : Application
 
     public override void Initialize()
     {
+        DataTemplates.Add(DesignContainer!.Resolve<ViewLocator>());
         AvaloniaXamlLoader.Load(this);
     }
 

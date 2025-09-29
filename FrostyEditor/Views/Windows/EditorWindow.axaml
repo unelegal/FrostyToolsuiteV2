@@ -1,0 +1,46 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vControls="using:FrostyEditor.Views.Controls"
+        xmlns:vmControls="using:FrostyEditor.ViewModels.Controls"
+        xmlns:vmWindows="using:FrostyEditor.ViewModels.Windows"
+        xmlns:lang="using:FrostyEditor.Assets.Lang"
+        xmlns:markup="using:FrostyEditor.Utilities.MarkupExtensions"
+        mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720"
+        x:Class="FrostyEditor.Views.Windows.EditorWindow"
+        x:DataType="vmWindows:EditorWindowViewModel"
+        Design.DataContext="{markup:DesignLocator {x:Type vmWindows:EditorWindowViewModel}}"
+        Title="Editor Window"
+        TransparencyLevelHint="AcrylicBlur"
+        Background="Transparent"
+        Width="1280" Height="720"
+        WindowStartupLocation="CenterScreen">
+  
+  <Panel>
+    <ExperimentalAcrylicBorder IsHitTestVisible="False">
+      <ExperimentalAcrylicBorder.Material>
+        <ExperimentalAcrylicMaterial
+          BackgroundSource="Digger"
+          TintColor="{DynamicResource SystemChromeLowColor}"
+          TintOpacity="1"
+          MaterialOpacity="0.65" />
+      </ExperimentalAcrylicBorder.Material>
+    </ExperimentalAcrylicBorder>
+    
+    <DockPanel>
+      <Menu DockPanel.Dock="Top">
+        <MenuItem Header="File">
+          <MenuItem Header="Load Layout" />
+          <Separator />
+          <MenuItem Header="Save Layout" />
+          <Separator />
+          <MenuItem Header="Close Layout" />
+        </MenuItem>
+      </Menu>
+      
+      <DockControl Layout="{Binding Layout}"/>
+    </DockPanel>
+  </Panel>
+  
+</Window>

@@ -26,4 +26,6 @@ public interface IAppFlowService
 
     public Task SwitchToLoadingSplash();
 
+    public Task SwitchToEditor();
+
 }

@@ -19,4 +19,9 @@ public class DesignAppFlowService : IAppFlowService
     {
 
     }
+
+    public async Task SwitchToEditor()
+    {
+
+    }
 }

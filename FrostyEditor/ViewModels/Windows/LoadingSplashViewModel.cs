@@ -21,6 +21,7 @@ public partial class LoadingSplashViewModel : ViewModelBase, IActivatableViewMod
     public required IProjectService ProjectService { private get; init; }
     public required IProfileService ProfileService { private get; init; }
     public required IDialogService DialogService { private get; init; }
+    public required IAppFlowService AppFlowService { private get; init; }
 
     public LoadingSplashViewModel()
     {
@@ -78,6 +79,8 @@ public partial class LoadingSplashViewModel : ViewModelBase, IActivatableViewMod
                 {
                     throw new Exception("Failed to initialize AssetManager");
                 }
+
+                await AppFlowService!.SwitchToEditor();
             }).ConfigureAwait(false);
         });
     }
