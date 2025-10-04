@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Reactive;
 using System.Reactive.Disposables;
@@ -6,6 +7,7 @@ using System.Reactive.Linq;
 using System.Threading.Tasks;
 using Frosty.Sdk;
 using Frosty.Sdk.Managers;
+using Frosty.Sdk.Sdk;
 using FrostyEditor.Services;
 using FrostyEditor.Utilities;
 using Octokit;
@@ -62,7 +64,22 @@ public partial class LoadingSplashViewModel : ViewModelBase, IActivatableViewMod
 
                 if (!File.Exists(ProfilesLibrary.SdkPath))
                 {
-                    await DialogService!.OpenGenerateSdk();
+                    int? pid = await Async.RunOnUI(async () => await DialogService!.OpenSelectProcess());
+                    if (pid is null)
+                    {
+                        throw new Exception("No process selected!");
+                    }
+
+                    TypeSdkGenerator generator = new();
+                    if (!generator.DumpTypes(Process.GetProcessById(pid.Value)))
+                    {
+                        throw new Exception("Failed to dump types!");
+                    }
+
+                    if (!generator.CreateSdk(ProfilesLibrary.SdkPath))
+                    {
+                        throw new Exception("Failed to generate SDK!");
+                    }
                 }
 
                 if (!TypeLibrary.Initialize())
@@ -79,6 +96,8 @@ public partial class LoadingSplashViewModel : ViewModelBase, IActivatableViewMod
                 {
                     throw new Exception("Failed to initialize AssetManager");
                 }
+
+                ProjectService.RefreshEbxListFromFrosty();
 
                 await AppFlowService!.SwitchToEditor();
             }).ConfigureAwait(false);

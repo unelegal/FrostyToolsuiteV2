@@ -27,5 +27,5 @@ public interface IDialogService
 
     public void SwitchOutCurrentWindow(Window newWindow);
 
-    public Task OpenGenerateSdk();
+    public Task<int?> OpenSelectProcess();
 }

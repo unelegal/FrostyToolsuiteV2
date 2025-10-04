@@ -5,11 +5,45 @@
              xmlns:vmTools="using:FrostyEditor.ViewModels.Tools"
              xmlns:lang="using:FrostyEditor.Assets.Lang"
              xmlns:markup="using:FrostyEditor.Utilities.MarkupExtensions"
+             xmlns:li="using:LoadingIndicators.Avalonia"
+             xmlns:model="using:FrostyEditor.Models.DataExplorer"
+             xmlns:conv="using:Avalonia.Controls.Converters"
              Design.DataContext="{markup:DesignLocator {x:Type vmTools:DataExplorerViewModel}}"
              mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="600"
              x:Class="FrostyEditor.Views.Tools.DataExplorerView"
              x:DataType="vmTools:DataExplorerViewModel">
   
-  <TextBlock Text="TEST"></TextBlock>
+  <UserControl.Resources>
+    <conv:EnumToBoolConverter x:Key="EnumToBoolConverter" />
+  </UserControl.Resources>
+  
+  <Panel>
+    <li:LoadingIndicator IsActive="{Binding !HasElements}" Mode="Wave" Width="100"/>
+    <TreeDataGrid x:Name="Tree" Source="{Binding DataEntries}" IsVisible="{Binding HasElements}">
+      <TreeDataGrid.Resources>
+        <DataTemplate x:Key="NameCell" x:DataType="model:DataExplorerEntry">
+          <StackPanel Orientation="Horizontal">
+            <PathIcon Margin="10 0" VerticalAlignment="Center"
+                      Classes.Folder="{Binding LogicalType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:EntryType.Folder}}"
+                      Classes.Ebx="{Binding LogicalType, Converter={StaticResource EnumToBoolConverter}, ConverterParameter={x:Static model:EntryType.Ebx}}">
+              <PathIcon.Styles>
+                <Style Selector="PathIcon.Folder">
+                  <Style.Setters>
+                    <Setter Property="Data" Value="{StaticResource IconFolderRegular}" />
+                  </Style.Setters>
+                </Style>
+                <Style Selector="PathIcon.Ebx">
+                  <Style.Setters>
+                    <Setter Property="Data" Value="{StaticResource IconDocumentRegular}" />
+                  </Style.Setters>
+                </Style>
+              </PathIcon.Styles>
+            </PathIcon>
+            <TextBlock Text="{Binding Name}" VerticalAlignment="Center"></TextBlock>
+          </StackPanel>
+        </DataTemplate>
+      </TreeDataGrid.Resources>
+    </TreeDataGrid>
+  </Panel>
   
 </UserControl>

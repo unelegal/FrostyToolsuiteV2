@@ -1,0 +1,24 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vmDocs="using:FrostyEditor.ViewModels.Documents"
+             xmlns:lang="using:FrostyEditor.Assets.Lang"
+             xmlns:markup="using:FrostyEditor.Utilities.MarkupExtensions"
+             xmlns:li="using:LoadingIndicators.Avalonia"
+             xmlns:model="using:FrostyEditor.Models.DataExplorer"
+             xmlns:conv="using:Avalonia.Controls.Converters"
+             Design.DataContext="{markup:DesignLocator {x:Type vmDocs:EbxViewerViewModel}}"
+             mc:Ignorable="d" d:DesignWidth="350" d:DesignHeight="600"
+             x:Class="FrostyEditor.Views.Documents.EbxViewerView"
+             x:DataType="vmDocs:EbxViewerViewModel">
+  
+  <Panel>
+    <li:LoadingIndicator IsActive="{Binding !IsLoaded}" Mode="Wave" Width="100"/>
+    
+    <ScrollViewer>
+      <TextBlock Text="{Binding PlaceholderText}" />
+    </ScrollViewer>
+  </Panel>
+  
+</UserControl>

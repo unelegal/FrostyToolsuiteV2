@@ -45,8 +45,8 @@ public class DesignDialogService : IDialogService
 
     }
 
-    public async Task OpenGenerateSdk()
+    public async Task<int?> OpenSelectProcess()
     {
-
+        return null;
     }
 }

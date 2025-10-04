@@ -79,8 +79,8 @@ public class DialogService : IDialogService
         m_owningWindow.Close();
     }
 
-    public async Task OpenGenerateSdk()
+    public async Task<int?> OpenSelectProcess()
     {
-        throw new NotImplementedException();
+        return await ShowDialogAsync<ProcessSelectorWindow, int?>();
     }
 }

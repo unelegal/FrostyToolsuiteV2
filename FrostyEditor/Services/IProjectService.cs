@@ -1,6 +1,9 @@
-﻿using System.Reactive;
+﻿using System;
+using System.Reactive;
 using System.Threading.Tasks;
+using DynamicData;
 using Frosty.ModSupport.Project;
+using Frosty.Sdk.Managers.Entries;
 using ReactiveUI;
 
 namespace FrostyEditor.Services;
@@ -25,5 +28,11 @@ public interface IProjectService
     public Task OpenProject(string projectPath);
 
     public FrostyProject? FrostyProject { get; }
+
+    public void RefreshEbxListFromFrosty();
+
+    public IObservable<IChangeSet<EbxAssetEntry, Guid>> ConnectEbxList();
+
+    public IObservable<Change<EbxAssetEntry, Guid>> WatchAssetEntry(Guid key);
 
 }

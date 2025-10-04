@@ -32,7 +32,7 @@ public class ViewLocator : IDataTemplate
     {
         var type = viewModel.GetType();
         var viewForType = typeof(IViewFor<>).MakeGenericType(type);
-        if (Locator.Current.GetService(viewForType) is IViewFor view)
+        if (ContainerScope.Resolve(viewForType) is IViewFor view)
         {
             return view;
         }
@@ -58,14 +58,14 @@ public class ViewLocator : IDataTemplate
 
     public bool Match(object? data)
     {
-        if (data is null)
-        {
-            return false;
-        }
-
         if (data is IDockable)
         {
             return true;
+        }
+
+        if (data is not IReactiveObject)
+        {
+            return false;
         }
 
         return ResolveForMatch(data) is not null;

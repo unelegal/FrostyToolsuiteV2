@@ -15,21 +15,46 @@ public class DockFactory : Factory
 {
     public required ILifetimeScope ServiceScope { private get; init; }
 
+    private ToolDock? m_leftToolDock;
+    public ToolDock? LeftToolDock => m_leftToolDock;
+
+    private DocumentDock? m_mainAssetDock;
+    public DocumentDock? MainAssetDock => m_mainAssetDock;
+
+    private IRootDock? m_rootDock;
+    public IRootDock? RootDock => m_rootDock;
+
     public override IRootDock CreateLayout()
     {
         var dataExplorer = ServiceScope.Resolve<DataExplorerViewModel>();
 
-        var root = CreateRootDock();
-        root.VisibleDockables = CreateList<IDockable>(
-            new ToolDock
+        m_leftToolDock = new ToolDock
+        {
+            VisibleDockables = CreateList<IDockable>(dataExplorer),
+            ActiveDockable = dataExplorer,
+            Proportion = 0.20,
+            IsCollapsable = false
+        };
+        m_mainAssetDock = new DocumentDock
+        {
+            VisibleDockables = CreateList<IDockable>(),
+            IsCollapsable = false
+        };
+
+        m_rootDock = CreateRootDock();
+        m_rootDock.VisibleDockables = CreateList<IDockable>(
+            new ProportionalDock
             {
-                VisibleDockables = CreateList<IDockable>(dataExplorer),
-                ActiveDockable = dataExplorer,
+                VisibleDockables = CreateList<IDockable>(
+                    m_leftToolDock,
+                    new ProportionalDockSplitter(),
+                    m_mainAssetDock
+                )
             }
         );
-        root.DefaultDockable = root.VisibleDockables[0];
+        m_rootDock.DefaultDockable = m_rootDock.VisibleDockables[0];
 
-        return root;
+        return m_rootDock;
     }
 
     public override void InitLayout(IDockable layout)

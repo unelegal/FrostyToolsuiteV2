@@ -1,15 +1,13 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="FrostyEditor.App"
-             xmlns:local="using:FrostyEditor"
-             xmlns:t="using:FrostyEditor.ViewModels.Tools"
-             xmlns:v="using:FrostyEditor.Views.Tools"
              RequestedThemeVariant="Dark">
   <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
   <Application.Styles>
     <FluentTheme />
     <DockFluentTheme />
+    <StyleInclude Source="avares://Avalonia.Controls.TreeDataGrid/Themes/Fluent.axaml" />
   </Application.Styles>
 
   <Application.Resources>
