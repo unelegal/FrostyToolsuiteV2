@@ -16,7 +16,7 @@ namespace FrostyEditor.ViewModels.Documents;
 public partial class EbxViewerViewModel : Document
 {
     [ObservableAsProperty]
-    private bool m_isLoaded = false;
+    private bool m_isLoaded;
 
     [ObservableAsProperty]
     private string m_placeholderText = string.Empty;

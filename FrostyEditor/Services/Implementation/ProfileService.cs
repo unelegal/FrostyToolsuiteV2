@@ -20,10 +20,11 @@ public class ProfileService : IProfileService
     private readonly AsyncSemaphore m_fileSemaphore = new(1, 1);
     private readonly SourceCache<ProfileInstance, string> m_profileInstances = new(t => t.Slug);
 
-    public ProfileService()
+    public ProfileService(ILoggingService loggingService)
     {
         // TEMP
         Utils.BaseDirectory = Path.GetDirectoryName(AppContext.BaseDirectory) ?? string.Empty;
+        FrostyLogger.Logger = loggingService;
 
         ProfilesLibrary.Initialize();
     }

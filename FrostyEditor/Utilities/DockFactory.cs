@@ -27,6 +27,7 @@ public class DockFactory : Factory
     public override IRootDock CreateLayout()
     {
         var dataExplorer = ServiceScope.Resolve<DataExplorerViewModel>();
+        var logViewer = ServiceScope.Resolve<LogViewModel>();
 
         m_leftToolDock = new ToolDock
         {
@@ -35,10 +36,26 @@ public class DockFactory : Factory
             Proportion = 0.20,
             IsCollapsable = false
         };
+        ToolDock bottomToolDock = new()
+        {
+            VisibleDockables = CreateList<IDockable>(logViewer),
+            ActiveDockable = logViewer,
+            Proportion = 0.33
+        };
         m_mainAssetDock = new DocumentDock
         {
             VisibleDockables = CreateList<IDockable>(),
             IsCollapsable = false
+        };
+
+        ProportionalDock rightVertSplit = new()
+        {
+            Orientation = Orientation.Vertical,
+            VisibleDockables = CreateList<IDockable>(
+                m_mainAssetDock,
+                new ProportionalDockSplitter(),
+                bottomToolDock
+            )
         };
 
         m_rootDock = CreateRootDock();
@@ -48,7 +65,7 @@ public class DockFactory : Factory
                 VisibleDockables = CreateList<IDockable>(
                     m_leftToolDock,
                     new ProportionalDockSplitter(),
-                    m_mainAssetDock
+                    rightVertSplit
                 )
             }
         );

@@ -19,7 +19,8 @@ public class ServiceModule : Module
             builder.RegisterType<DesignDialogService>().As<IDialogService>().SingleInstance();
             builder.RegisterType<DesignAppFlowService>().As<IAppFlowService>().SingleInstance();
             builder.RegisterType<DesignDockingService>().As<IDockingService>().SingleInstance();
-            builder.RegisterType<DesignProcessService>().As<IProcessService>().InstancePerDependency();
+            builder.RegisterType<DesignProcessService>().As<IProcessService>().SingleInstance();
+            builder.RegisterType<DesignLoggingService>().As<ILoggingService>().SingleInstance();
         }
         else
         {
@@ -32,6 +33,7 @@ public class ServiceModule : Module
             builder.RegisterType<DockingService>().As<IDockingService>().InstancePerMatchingLifetimeScope(IAppFlowService.AppFlowTag);
             builder.RegisterType<DockFactory>().InstancePerMatchingLifetimeScope(IAppFlowService.AppFlowTag);
             builder.RegisterType<ProcessService>().As<IProcessService>().InstancePerDependency();
+            builder.RegisterType<LoggingService>().As<ILoggingService>().SingleInstance();
         }
 
         builder.RegisterType<IAppFlowService.FlowId>().InstancePerMatchingLifetimeScope(IAppFlowService.AppFlowTag);

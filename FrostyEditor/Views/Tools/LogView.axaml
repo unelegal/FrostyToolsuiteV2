@@ -1,0 +1,36 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:vmTools="using:FrostyEditor.ViewModels.Tools"
+             xmlns:lang="using:FrostyEditor.Assets.Lang"
+             xmlns:markup="using:FrostyEditor.Utilities.MarkupExtensions"
+             xmlns:li="using:LoadingIndicators.Avalonia"
+             xmlns:model="using:FrostyEditor.Models.DataExplorer"
+             xmlns:conv="using:Avalonia.Controls.Converters"
+             xmlns:models="using:FrostyEditor.Models"
+             xmlns:behaviors="using:FrostyEditor.Behaviors"
+             Design.DataContext="{markup:DesignLocator {x:Type vmTools:LogViewModel}}"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="500"
+             x:Class="FrostyEditor.Views.Tools.LogView"
+             x:DataType="vmTools:LogViewModel">
+
+  <Grid RowDefinitions="Auto, Auto, *">
+    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="10" Margin="10">
+      <TextBlock Text="Minimum Level:" VerticalAlignment="Center" />
+      <ComboBox Width="120" SelectedItem="{Binding MinimumLogLevel}" ItemsSource="{Binding AvailableLogLevels}" VerticalAlignment="Center"/>
+      <ToggleButton Content="Autoscroll" IsChecked="{Binding AutoScroll}" VerticalAlignment="Center" />
+      <Button Content="Clear" Command="{Binding ClearLogCommand}" VerticalAlignment="Center"/>
+    </StackPanel>
+    
+    <Separator Grid.Row="1" Margin="10 2"/>
+    
+    <ListBox Grid.Row="2" ItemsSource="{Binding LogMessages}" Margin="10" CornerRadius="5">
+      <Interaction.Behaviors>
+        <behaviors:ScrollToEndBehavior ShouldAutoscroll="{Binding AutoScroll}"/>
+      </Interaction.Behaviors>
+    </ListBox>
+  </Grid>
+  
+  
+</UserControl>

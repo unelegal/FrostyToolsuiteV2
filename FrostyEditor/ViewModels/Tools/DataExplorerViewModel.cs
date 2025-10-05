@@ -97,6 +97,7 @@ public sealed partial class DataExplorerViewModel : Tool, IDisposable
             var segmentName = parts[i];
             var isFile = i == parts.Length - 1;
             var id = parent.Length == 0 ? segmentName : $"{parent}/{segmentName}";
+            id += isFile ? "_ebx" : "_dir";
             var parentId = parent.Length == 0 ? string.Empty : parent;
             var nodeType = isFile ? EntryType.Ebx : EntryType.Folder;
 

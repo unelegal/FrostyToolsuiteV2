@@ -4,6 +4,7 @@ using System.IO;
 using System.Reactive;
 using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Threading.Tasks;
 using System.Threading.Tasks;
 using Frosty.Sdk;
 using Frosty.Sdk.Managers;
@@ -100,7 +101,11 @@ public partial class LoadingSplashViewModel : ViewModelBase, IActivatableViewMod
                 ProjectService.RefreshEbxListFromFrosty();
 
                 await AppFlowService!.SwitchToEditor();
-            }).ConfigureAwait(false);
+            }).ToObservable().Subscribe(_ => { }, onError:
+            error =>
+            {
+                Console.WriteLine(error);
+            }).DisposeWith(disposables);
         });
     }
 

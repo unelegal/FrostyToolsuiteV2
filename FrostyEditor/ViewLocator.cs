@@ -32,9 +32,9 @@ public class ViewLocator : IDataTemplate
     {
         var type = viewModel.GetType();
         var viewForType = typeof(IViewFor<>).MakeGenericType(type);
-        if (ContainerScope.Resolve(viewForType) is IViewFor view)
+        if (ContainerScope.TryResolve(viewForType, out var view) && view is IViewFor viewFor)
         {
-            return view;
+            return viewFor;
         }
 
         return null;
